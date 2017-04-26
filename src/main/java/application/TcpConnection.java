@@ -1,0 +1,119 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package application;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.nio.file.Files;
+
+/**
+ * Represents a TcpConnection.
+ */
+public class TcpConnection {
+
+    private final int portNumber = 9999;
+
+    /**
+     * A socket used for communication.
+     */
+    private Socket sock;
+
+    /**
+     * The address files will be sent to.
+     */
+   private InetAddress destinationAddress;
+
+    /**
+     * A stream used to ouput data in a socket.
+     */
+   private DataOutputStream dataOut;
+    
+    /**
+     * A stream used to read data from a socket.
+     */
+   private DataInputStream dataIn;
+
+    /**
+     * Constructor for tcp connection class-
+     *
+     * @param destinationAddress the destination ip address in string
+     * @throws UnknownHostException if ip address is invalid
+     * @throws IOException if socket isn't created properly
+     */
+    public TcpConnection(String destinationAddress) throws UnknownHostException, IOException {
+        this.destinationAddress = InetAddress.getByName(destinationAddress);
+        sock = new Socket(this.destinationAddress, portNumber);
+        dataOut = new DataOutputStream(sock.getOutputStream());
+        dataIn = new DataInputStream(sock.getInputStream());
+        
+    }
+
+    /**
+     * Sends the file size of a file to the destination ip address configured
+     *
+     * @param file the file to send its size
+     * @return true if file size sent
+     * @throws FileNotFoundException if file not found
+     * @throws IOException if failed to write
+     */
+    public boolean sendFileSize(File file) throws FileNotFoundException, IOException {
+        byte[] fileBytes = Files.readAllBytes(file.toPath());
+        dataOut.write(fileBytes.length);
+        return true;
+    }
+
+    /**
+     * Sends a file to a waiting host.
+     *
+     * @param file the file to send
+     * @return true if file is sent
+     * @throws IOException if failed to write the file
+     */
+    public boolean sendFile(File file) throws IOException {
+        byte[] fileBytes = Files.readAllBytes(file.toPath());
+        dataOut.write(fileBytes);
+        return true;
+    }
+    
+ 
+    /**
+     * Downloads a file from a socket.
+     * @param fileName the name of the new file
+     * @param path the path of the new file
+     * @param fileSize the size of the file receiving
+     * @return true if file downloaded successfully
+     * @throws FileNotFoundException if file not found
+     * @throws IOException  if file not dowloaded from socket
+     */
+    public boolean downloadFile(String fileName,String path,int fileSize) throws FileNotFoundException, IOException
+    {
+        byte[] fileData = new byte[fileSize];
+        dataIn.read(fileData, 0, fileData.length);
+        path += fileName;
+        FileOutputStream fileOut = new FileOutputStream(path);
+        fileOut.write(fileData);
+        fileOut.close();
+        return true;
+    }
+    
+
+    /**
+     * Closes the socket on this tcp connection.
+     * @return true if socket closed
+     * @throws IOException  if socket failed to close
+     */
+    public boolean closeConnection() throws IOException {
+        sock.close();
+        return true;
+    }
+}
