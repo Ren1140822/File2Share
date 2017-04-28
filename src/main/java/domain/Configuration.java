@@ -3,6 +3,8 @@
  */
 package domain;
 
+import util.Strings;
+
 /**
  * Represents the configurations of the application behaviors.
  */
@@ -72,15 +74,8 @@ public class Configuration {
      * @return true if all strings are valid, false if not
      */
     private boolean validateAllStrings(String sharedFolderName, String downloadFolderName){
-        if (sharedFolderName == null || sharedFolderName.isEmpty()
-                || sharedFolderName.contains(" ")){
-            return false;
-        }
-        if (downloadFolderName == null || downloadFolderName.isEmpty()
-                || downloadFolderName.contains(" ")){
-            return false;
-        }
-        return true;
+        return Strings.isNullOrEmptyOrWhiteSpace(sharedFolderName)
+                && Strings.isNullOrEmptyOrWhiteSpace(downloadFolderName);
     }    
     
     /**
