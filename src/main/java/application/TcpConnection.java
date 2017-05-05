@@ -12,6 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
@@ -21,27 +22,29 @@ import java.nio.file.Files;
  */
 public class TcpConnection {
 
-    private final int portNumber = 9999;
+    private final int portNumber = 9997;
 
     /**
      * A socket used for communication.
      */
     private Socket sock;
 
+    private Socket sock2;
+
     /**
      * The address files will be sent to.
      */
-   private InetAddress destinationAddress;
+    private InetAddress destinationAddress;
 
     /**
      * A stream used to ouput data in a socket.
      */
-   private DataOutputStream dataOut;
-    
+    private DataOutputStream dataOut;
+
     /**
      * A stream used to read data from a socket.
      */
-   private DataInputStream dataIn;
+    private DataInputStream dataIn;
 
     /**
      * Constructor for tcp connection class-
@@ -52,10 +55,12 @@ public class TcpConnection {
      */
     public TcpConnection(String destinationAddress) throws UnknownHostException, IOException {
         this.destinationAddress = InetAddress.getByName(destinationAddress);
+        ServerSocket serverSock = new ServerSocket(portNumber);
         sock = new Socket(this.destinationAddress, portNumber);
+        sock2 = serverSock.accept();
         dataOut = new DataOutputStream(sock.getOutputStream());
-        dataIn = new DataInputStream(sock.getInputStream());
-        
+        dataIn = new DataInputStream(sock2.getInputStream());
+
     }
 
     /**
@@ -68,7 +73,7 @@ public class TcpConnection {
      */
     public boolean sendFileSize(File file) throws FileNotFoundException, IOException {
         byte[] fileBytes = Files.readAllBytes(file.toPath());
-        dataOut.write(fileBytes.length);
+        dataOut.writeInt(fileBytes.length);
         return true;
     }
 
@@ -84,33 +89,40 @@ public class TcpConnection {
         dataOut.write(fileBytes);
         return true;
     }
-    
- 
+
     /**
      * Downloads a file from a socket.
+     *
      * @param fileName the name of the new file
      * @param path the path of the new file
      * @param fileSize the size of the file receiving
      * @return true if file downloaded successfully
      * @throws FileNotFoundException if file not found
-     * @throws IOException  if file not dowloaded from socket
+     * @throws IOException if file not dowloaded from socket
      */
-    public boolean downloadFile(String fileName,String path,int fileSize) throws FileNotFoundException, IOException
-    {
+    public boolean downloadFile(String fileName, String path, int fileSize) throws FileNotFoundException, IOException {
         byte[] fileData = new byte[fileSize];
-        dataIn.read(fileData, 0, fileData.length);
-        path += fileName;
+        dataIn.readFully(fileData, 0, fileData.length);
+        //path += fileName;
         FileOutputStream fileOut = new FileOutputStream(path);
         fileOut.write(fileData);
         fileOut.close();
         return true;
     }
-    
+
+    public int readFileSize() throws IOException {
+        int fileSize = 0;
+
+        fileSize = dataIn.readInt();
+
+        return fileSize;
+    }
 
     /**
      * Closes the socket on this tcp connection.
+     *
      * @return true if socket closed
-     * @throws IOException  if socket failed to close
+     * @throws IOException if socket failed to close
      */
     public boolean closeConnection() throws IOException {
         sock.close();

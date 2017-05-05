@@ -21,7 +21,7 @@ public final class DataFileName {
      * @param name name of the file
      */
     public DataFileName(String name) {
-        if (Strings.isNullOrEmptyOrWhiteSpace(name)) {
+        if (!Strings.isNullOrEmptyOrWhiteSpace(name)) {
             throw new IllegalStateException();
         }
 
