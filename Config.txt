@@ -1,0 +1,5 @@
+udp_port_number: 32034
+udp_time_annoucement: 30
+refresh_file_time: 45
+shared_folder: /shared
+download_folder: /download
