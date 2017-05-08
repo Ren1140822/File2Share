@@ -28,7 +28,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.border.EmptyBorder;
 
 /**
  *
@@ -47,7 +46,7 @@ public class ChangeConfigurationsUI extends JDialog{
     private JButton saveBtn;
     private JButton editBtn;
     
-    private static final int WIDTH = 500, LENGTH = 400;
+    private static final int WIDTH = 450, LENGTH = 300;
     
     private static final String UDP_PORT = "UDP Port Number/";
     private static final String UDP_TIME = "UDP Time Annoucement: ";
@@ -94,25 +93,27 @@ public class ChangeConfigurationsUI extends JDialog{
         JPanel p = new JPanel(new GridLayout(5,1));
         
         p.setBorder(BorderFactory.createTitledBorder("Configurations:"));
- 
-        txtUDPPort = new JTextField(30);
+        
+        int aux = 10;
+        
+        txtUDPPort = new JTextField(aux);
         txtUDPPort.requestFocusInWindow();
         txtUDPPort.setText("" + controller.currentUDPPortNumber());
         txtUDPPort.setEditable(false);
         
-        txtUDPTime = new JTextField(30);
+        txtUDPTime = new JTextField(aux);
         txtUDPTime.setText("" + controller.currentUDPTimeAnnoucement());
         txtUDPTime.setEditable(false);
         
-        txtRefreshFile = new JTextField(30);
+        txtRefreshFile = new JTextField(aux);
         txtRefreshFile.setText("" + controller.currentRefreshFileTime());
         txtRefreshFile.setEditable(false);
         
-        txtShared = new JTextField(30);
+        txtShared = new JTextField(aux);
         txtShared.setText(controller.currentSharedFolderName());
         txtShared.setEditable(false);
         
-        txtDownload = new JTextField(30);
+        txtDownload = new JTextField(aux);
         txtDownload.setText(controller.currentDownloadFolderName());
         txtDownload.setEditable(false);
 
@@ -236,7 +237,6 @@ public class ChangeConfigurationsUI extends JDialog{
         label.setIcon(background);
 
         JPanel panel = new JPanel();
-        panel.setBorder(new EmptyBorder(5, 10, 10, 10));
         panel.add(label, BorderLayout.CENTER);
 
         return panel;
