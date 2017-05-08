@@ -41,4 +41,12 @@ public final class DataFileName {
         final DataFileName otherName = (DataFileName) o;
         return this.name.equals(otherName.name);
     }
+
+    public byte length() {
+        return (byte) this.name.length();
+    }
+
+    public String name() {
+        return this.name;
+    }
 }

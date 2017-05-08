@@ -18,7 +18,7 @@ public final class UdpConnection {
     /**
      * The UDP maximum payload safe amount to be sent over the internet.
      */
-    public static final int MAXIMUM_UDP_BYTES_PAYLOAD = 512;
+    public static final int MAXIMUM_BYTES_PAYLOAD = 512;
 
     /**
      * Sends the given data to the broadcast address over the given port.
@@ -50,7 +50,7 @@ public final class UdpConnection {
      * @throws IOException input/output exception
      */
     public static byte[] receive(int port) throws IOException {
-        byte[] data = new byte[MAXIMUM_UDP_BYTES_PAYLOAD];
+        byte[] data = new byte[MAXIMUM_BYTES_PAYLOAD];
         DatagramSocket sock = new DatagramSocket(port);
 
         DatagramPacket udpPacket = new DatagramPacket(data, data.length);

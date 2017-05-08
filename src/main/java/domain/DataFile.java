@@ -62,4 +62,12 @@ public final class DataFile {
         bufferedOut.close();
         return f;
     }
+
+    public byte nameSize() {
+        return this.name.length();
+    }
+
+    public String name() {
+        return this.name.name();
+    }
 }
