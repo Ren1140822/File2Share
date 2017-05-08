@@ -31,9 +31,9 @@ public final class StartConfiguration {
 
     public StartConfiguration() throws IOException {
         this.filename = DEFAULT_FILENAME;
-
-        //createConfig0urationFile(configuration);
         this.configuration = readConfigurationFile(DEFAULT_FILENAME);
+        
+        // TODO remove system.out
         System.out.println("\n\n" + configuration.toString() + "\n\n");
     }
     

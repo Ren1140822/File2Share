@@ -5,8 +5,8 @@
  */
 package presentation;
 
-import application.StartConfiguration;
 import java.io.IOException;
+import presentation.swing.F2ShareMenu;
 
 /**
  *
@@ -19,7 +19,7 @@ public class F2ShareMain {
      */
     public static void main(String[] args) throws IOException {
         // TODO code application logic here
-        final StartConfiguration s = new StartConfiguration();
+        final F2ShareMenu F = new F2ShareMenu();
         
     }
     
