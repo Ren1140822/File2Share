@@ -10,16 +10,13 @@ import util.Strings;
  */
 public class Configuration {
     
-    private String extension;
-    private String filename;
     private Integer UDPPortNumber;
     private Integer UDPTimeAnnouncement;
     private Integer refreshFileTime;
     private String sharedFolderName;
     private String downloadFolderName;
     
-    private static final String DEFAULT_EXTENSION = ".txt";
-    private static final String DEFAULT_FILENAME = "Config";
+    
     private static final Integer DEFAULT_UDP_PORT_NUMBER = 32034;
     private static final Integer DEFAULT_UDP_TIME_ANNOUCEMENT = 30; // seconds
     private static final Integer DEFAULT_REFRESH_FILE_TIME = 45; // seconds
@@ -30,9 +27,7 @@ public class Configuration {
     /**
      * Constructor by default
      */
-    private Configuration(){
-        this.extension = DEFAULT_EXTENSION;
-        this.filename = DEFAULT_FILENAME;
+    public Configuration(){
         this.UDPPortNumber = DEFAULT_UDP_PORT_NUMBER;
         this.UDPTimeAnnouncement = DEFAULT_UDP_TIME_ANNOUCEMENT;
         this.refreshFileTime = DEFAULT_REFRESH_FILE_TIME;
@@ -55,14 +50,11 @@ public class Configuration {
             throw new IllegalStateException();
         }
         
-        this.extension = DEFAULT_EXTENSION;
-        this.filename = DEFAULT_FILENAME;
         this.UDPPortNumber = UDPPortNumber;
         this.UDPTimeAnnouncement = UDPTimeAnnouncement;
         this.refreshFileTime = refreshFileTime;
-        this.extension = DEFAULT_FOLDER_PREFIX + extension;
         this.sharedFolderName = DEFAULT_FOLDER_PREFIX + sharedFolderName;
-        this.downloadFolderName = downloadFolderName;
+        this.downloadFolderName = DEFAULT_FOLDER_PREFIX + downloadFolderName;
         
     }
     
@@ -74,8 +66,9 @@ public class Configuration {
      * @return true if all strings are valid, false if not
      */
     private boolean validateAllStrings(String sharedFolderName, String downloadFolderName){
-        return Strings.isNullOrEmptyOrWhiteSpace(sharedFolderName)
-                && Strings.isNullOrEmptyOrWhiteSpace(downloadFolderName);
+        boolean aux1 = Strings.isNullOrEmptyOrWhiteSpace(sharedFolderName) && !sharedFolderName.contains(" ");
+        boolean aux2 = Strings.isNullOrEmptyOrWhiteSpace(downloadFolderName) && !downloadFolderName.contains(" ");
+        return aux1 && aux2;
     }    
     
     /**
@@ -102,12 +95,11 @@ public class Configuration {
     
     @Override
     public String toString(){
-        return "Filename: " + this.filename + this.extension + 
-                "\nUDP Port Number: " + this.UDPPortNumber + 
-                "\nUDP Time Annoucement: " + this.UDPTimeAnnouncement + 
-                "\nRefresh File Time: " + this.refreshFileTime + 
-                "\nShared folder: " + this.sharedFolderName + 
-                "\nDownload folder: " + this.downloadFolderName;
+        return  "udp_port_number: " + this.UDPPortNumber + 
+                "\nudp_time_annoucement: " + this.UDPTimeAnnouncement + 
+                "\nrefresh_file_time: " + this.refreshFileTime + 
+                "\nshared_folder: " + this.sharedFolderName + 
+                "\ndownload_folder: " + this.downloadFolderName;
     }
     
 }

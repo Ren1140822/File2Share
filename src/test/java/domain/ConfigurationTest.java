@@ -69,32 +69,32 @@ public class ConfigurationTest {
     
     @Test(expected = IllegalStateException.class)
     public void testUDPPortNumberMustNotBeNull() {
-        Configuration instance = new Configuration(null, 30, 50, "sharedTest", "downloadTest");
+        Configuration instance = new Configuration(null, 30, 50, "sharedTest", "download Test");
     }
     
     @Test(expected = IllegalStateException.class)
     public void testUDPPortNumberMustNonNegative() {
-        Configuration instance = new Configuration(-1, 30, 50, "sharedTest", "downloadTest");
+        Configuration instance = new Configuration(-1, 30, 50, "sharedTest", "download Test");
     }
     
     @Test(expected = IllegalStateException.class)
     public void testUDPTimeAnnouncementMustNotBeNull() {
-        Configuration instance = new Configuration(80, null, 50, "sharedTest", "downloadTest");
+        Configuration instance = new Configuration(80, null, 50, "sharedTest", "download Test");
     }
     
     @Test(expected = IllegalStateException.class)
     public void testUDPTimeAnnouncementMustNonNegative() {
-        Configuration instance = new Configuration(80, -1, 50, "sharedTest", "downloadTest");
+        Configuration instance = new Configuration(80, -1, 50, "sharedTest", "download Test");
     }
     
     @Test(expected = IllegalStateException.class)
     public void testRefreshFileTimeMustNotBeNull() {
-        Configuration instance = new Configuration(80, 30, null, "sharedTest", "downloadTest");
+        Configuration instance = new Configuration(80, 30, null, "sharedTest", "download Test");
     }
     
     @Test(expected = IllegalStateException.class)
     public void testRefreshFileTimeMustNonNegative() {
-        Configuration instance = new Configuration(80, 30, -1, "sharedTest", "downloadTest");
+        Configuration instance = new Configuration(80, 30, -1, "sharedTest", "download Test");
     }
     
     @Test
