@@ -95,11 +95,46 @@ public class Configuration {
     
     @Override
     public String toString(){
-        return  "udp_port_number: " + this.UDPPortNumber + 
-                "\nudp_time_annoucement: " + this.UDPTimeAnnouncement + 
-                "\nrefresh_file_time: " + this.refreshFileTime + 
-                "\nshared_folder: " + this.sharedFolderName + 
-                "\ndownload_folder: " + this.downloadFolderName;
+        return  "udp_port_number: " + this.getUDPPortNumber() + 
+                "\nudp_time_annoucement: " + this.getUDPTimeAnnouncement() + 
+                "\nrefresh_file_time: " + this.getRefreshFileTime() + 
+                "\nshared_folder: " + this.getSharedFolderName() + 
+                "\ndownload_folder: " + this.getDownloadFolderName();
+    }
+
+    /**
+     * @return the UDPPortNumber
+     */
+    public Integer getUDPPortNumber() {
+        return UDPPortNumber;
+    }
+
+    /**
+     * @return the UDPTimeAnnouncement
+     */
+    public Integer getUDPTimeAnnouncement() {
+        return UDPTimeAnnouncement;
+    }
+
+    /**
+     * @return the refreshFileTime
+     */
+    public Integer getRefreshFileTime() {
+        return refreshFileTime;
+    }
+
+    /**
+     * @return the sharedFolderName
+     */
+    public String getSharedFolderName() {
+        return sharedFolderName;
+    }
+
+    /**
+     * @return the downloadFolderName
+     */
+    public String getDownloadFolderName() {
+        return downloadFolderName;
     }
     
 }

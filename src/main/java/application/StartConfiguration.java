@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
-import java.util.Scanner;
 
 /**
  *
@@ -31,10 +30,7 @@ public final class StartConfiguration {
 
     public StartConfiguration() throws IOException {
         this.filename = DEFAULT_FILENAME;
-        this.configuration = readConfigurationFile(DEFAULT_FILENAME);
-        
-        // TODO remove system.out
-        System.out.println("\n\n" + configuration.toString() + "\n\n");
+        this.configuration = readConfigurationFile();
     }
     
     /**
@@ -42,11 +38,11 @@ public final class StartConfiguration {
      * @return
      * @throws java.io.IOException
      */
-    public Configuration readConfigurationFile(String fileName) throws IOException {
+    public Configuration readConfigurationFile() throws IOException {
 
         this.builder = new ConfigurationBuilder();
 
-        List<String> rows = readLines(fileName);
+        List<String> rows = readLines(DEFAULT_FILENAME);
         if(rows == null){
             return configuration = new Configuration();
         }

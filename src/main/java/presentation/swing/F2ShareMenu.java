@@ -16,6 +16,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JList;
@@ -30,7 +32,6 @@ import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.border.EmptyBorder;
 
 /**
  *
@@ -195,7 +196,11 @@ public class F2ShareMenu extends JFrame{
         item.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                configurations();
+                try {
+                    configurations();
+                } catch (IOException ex) {
+                    Logger.getLogger(F2ShareMenu.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
         return item;
@@ -236,12 +241,21 @@ public class F2ShareMenu extends JFrame{
         return item;
     }
     
-    private void configurations(){
-        
+    private void configurations() throws IOException{
+        final ChangeConfigurationsUI c = new ChangeConfigurationsUI(F2ShareMenu.this);
     }
     
     private void exitAPP(){
-        dispose();
+        String[] op = {"Yes", "No"};
+        String question = "Close aplication?";
+        int opcao = JOptionPane.showOptionDialog(F2ShareMenu.this, question,
+                this.getTitle(), JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE, null, op, op[0]);
+        if (opcao == JOptionPane.YES_OPTION) {
+            dispose();
+        } else {
+            setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        }       
     }
     
 }
