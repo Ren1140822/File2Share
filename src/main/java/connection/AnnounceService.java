@@ -48,7 +48,7 @@ public class AnnounceService {
 
             fileNameSize = file.nameSize();
 
-            if (dataCurrentSize + fileNameSize + 1 <= UdpConnection.MAXIMUM_BYTES_PAYLOAD) {
+            if (dataCurrentSize + fileNameSize + 1 > UdpConnection.MAXIMUM_BYTES_PAYLOAD) {
                 data[4] = countFiles;
                 UdpConnection.sendBroadcast(data, udpPort);
 
