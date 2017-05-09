@@ -16,13 +16,14 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
+import java.util.Arrays;
 
 /**
  * Represents a TcpConnection.
  */
 public class TcpConnection {
 
-    private final int portNumber = 9997;
+    private final int portNumber = 0;
 
     /**
      * A socket used for communication.
@@ -53,9 +54,9 @@ public class TcpConnection {
      * @throws UnknownHostException if ip address is invalid
      * @throws IOException if socket isn't created properly
      */
-    public TcpConnection(String destinationAddress) throws UnknownHostException, IOException {
+    public TcpConnection(String destinationAddress, int portNumber) throws UnknownHostException, IOException {
         this.destinationAddress = InetAddress.getByName(destinationAddress);
-        ServerSocket serverSock = new ServerSocket(portNumber);
+        ServerSocket serverSock = new ServerSocket(this.portNumber);
         sock = new Socket(this.destinationAddress, portNumber);
         sock2 = serverSock.accept();
         dataOut = new DataOutputStream(sock.getOutputStream());
@@ -110,12 +111,30 @@ public class TcpConnection {
         return true;
     }
 
+    /**
+     * Reads the next 4 bytes of data into an integer.
+     * @return the integer read
+     * @throws IOException 
+     */
     public int readFileSize() throws IOException {
         int fileSize = 0;
-
         fileSize = dataIn.readInt();
-
         return fileSize;
+    }
+    
+    /**
+     * Reads information regarding the file requested by other user.
+     * @return the string containing the information
+     * @throws IOException 
+     */
+    public String readFileRequestInfo() throws IOException
+    {
+          //TODO: Create semaphore to prevent this to run while downloadFile method is running
+         int requestSize = readFileSize();
+         byte[] fileData = new byte[requestSize];
+         dataIn.readFully(fileData, 0, fileData.length);
+         String downloadInfo = Arrays.toString(fileData);
+         return downloadInfo;
     }
 
     /**
@@ -126,6 +145,15 @@ public class TcpConnection {
      */
     public boolean closeConnection() throws IOException {
         sock.close();
+        sock2.close();
         return true;
+    }
+
+    /**
+     * Gets the current bound port number.
+     * @return the port number
+     */
+    public int getCurrentPortNumber() {
+        return sock2.getLocalPort();
     }
 }
