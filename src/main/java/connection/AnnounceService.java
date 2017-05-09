@@ -5,8 +5,10 @@ package connection;
 
 import domain.DataFile;
 import persistence.DataFileRepository;
+import util.Bytes;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.List;
 
 /**
@@ -23,30 +25,54 @@ public class AnnounceService {
 
         List<DataFile> filesToAnnounce = DataFileRepository.getSharedFiles();
 
+        // bytes 0 to 3 reserved for udp port and byte 4 reserved to announced files count
+        byte startingPosition = 5;
+
         byte data[] = new byte[UdpConnection.MAXIMUM_BYTES_PAYLOAD];
-        byte currentSize = 1, countFiles = 0, pos_index = 5, currentFileSize;
+
+        byte dataCurrentSize = startingPosition;
+        byte countFiles = 0;
+        byte pos_index = startingPosition;
+        byte fileNameSize;
+
+        // FIXME get udp port from configuration
+        int udpPort = 9999;
 
         // FIXME get dynamic tcp port
         int tcpPort = 9999;
-        // TODO add tcp port to the first 4 bytes of message
+        byte tcpPortByte[] = ByteBuffer.allocate(4).putInt(tcpPort).array();
+        Bytes.insertArrayIntoArray(data, 0, tcpPortByte);
 
         for (DataFile file : filesToAnnounce) {
             // if fits add, otherwise send and create new
 
-            currentFileSize = file.nameSize();
+            fileNameSize = file.nameSize();
 
-            if (currentSize + currentFileSize + 1 <= UdpConnection.MAXIMUM_BYTES_PAYLOAD) {
+            if (dataCurrentSize + fileNameSize + 1 > UdpConnection.MAXIMUM_BYTES_PAYLOAD) {
                 data[4] = countFiles;
-                // TODO send packet
-                // TODO reset counters
-                // TODO create new packet
+                UdpConnection.sendBroadcast(data, udpPort);
+
+                pos_index = startingPosition;
+
+                data[pos_index] = fileNameSize;
+                pos_index++;
+
+                byte name[] = file.nameBytes();
+                Bytes.insertArrayIntoArray(data, pos_index, name);
+                pos_index += name.length;
             } else {
                 countFiles++;
-                data[pos_index] = currentFileSize;
-                // TODO update counters
-            }
 
-            // TODO send packet
+                data[pos_index] = fileNameSize;
+                pos_index++;
+
+                byte name[] = file.nameBytes();
+                Bytes.insertArrayIntoArray(data, pos_index, name);
+                pos_index += name.length;
+            }
         }
+
+        data[4] = countFiles;
+        UdpConnection.sendBroadcast(data, udpPort);
     }
 }

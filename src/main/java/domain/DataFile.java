@@ -67,7 +67,7 @@ public final class DataFile {
         return this.name.length();
     }
 
-    public String name() {
-        return this.name.name();
+    public byte[] nameBytes() {
+        return this.name.nameBytes();
     }
 }

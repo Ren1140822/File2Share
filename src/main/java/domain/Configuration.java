@@ -96,7 +96,7 @@ public class Configuration {
     @Override
     public String toString(){
         return  "udp_port_number: " + this.getUDPPortNumber() + 
-                "\nudp_time_annoucement: " + this.getUDPTimeAnnouncement() + 
+                "\nudp_time_announcement: " + this.getUDPTimeAnnouncement() + 
                 "\nrefresh_file_time: " + this.getRefreshFileTime() + 
                 "\nshared_folder: " + this.getSharedFolderName() + 
                 "\ndownload_folder: " + this.getDownloadFolderName();

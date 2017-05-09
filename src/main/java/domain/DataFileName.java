@@ -46,7 +46,7 @@ public final class DataFileName {
         return (byte) this.name.length();
     }
 
-    public String name() {
-        return this.name;
+    public byte[] nameBytes() {
+        return this.name.getBytes();
     }
 }
