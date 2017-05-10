@@ -6,16 +6,13 @@
 package application;
 
 import domain.DataFile;
-import java.io.BufferedOutputStream;
+
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
  * @author Renato Oliveira 1140822@isep.ipp.pt
  */
 public class CommunicationController {
@@ -76,7 +73,7 @@ public class CommunicationController {
      * Downloads a data file
      *
      * @param fileName the NEW file name
-     * @param path the NEW path
+     * @param path     the NEW path
      * @return true if file downloaded
      */
     public boolean downloadDataFile(String fileName, String path) {

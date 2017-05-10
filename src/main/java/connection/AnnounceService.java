@@ -4,15 +4,12 @@
 package connection;
 
 import domain.DataFile;
-import domain.RemoteFile;
 import persistence.DataFileRepository;
 import util.Bytes;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Represents a service to make announcements in the network.
@@ -24,7 +21,7 @@ public class AnnounceService {
      *
      * @throws IOException input/output exception
      */
-    public void sendFilesNames() throws IOException {
+    public List<DataFile> sendFilesNames() throws IOException {
 
         List<DataFile> filesToAnnounce = DataFileRepository.getSharedFiles();
 
@@ -39,7 +36,7 @@ public class AnnounceService {
         byte fileNameSize;
 
         // FIXME get udp port from configuration
-        int udpPort = 9999;
+        int udpPort = 32034;
 
         // FIXME get dynamic tcp port
         int tcpPort = 8888;
@@ -77,5 +74,7 @@ public class AnnounceService {
 
         data[4] = countFiles;
         UdpConnection.sendBroadcast(data, udpPort);
+
+        return filesToAnnounce;
     }
 }

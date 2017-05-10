@@ -1,6 +1,11 @@
 package connection;
 
+import domain.DataFile;
+import framework.BaseObservable;
+
 import java.io.IOException;
+import java.util.Observer;
+import java.util.Set;
 import java.util.TimerTask;
 
 /**
@@ -10,15 +15,29 @@ import java.util.TimerTask;
  */
 public class AnnounceTimerTask extends TimerTask {
 
+    private final BaseObservable observable;
+
+    private final Set<DataFile> dataFiles;
+
+    public AnnounceTimerTask(Set<DataFile> dataFiles) {
+        this.dataFiles = dataFiles;
+        observable = new BaseObservable();
+    }
+
+    public void addObserver(Observer observer) {
+        this.observable.addObserver(observer);
+    }
+
     @Override
     public void run() {
         AnnounceService announceService = new AnnounceService();
 
         try {
-            announceService.sendFilesNames();
-            System.out.println("Announce sent.");
+            this.dataFiles.addAll(announceService.sendFilesNames());
+            observable.activateChanges();
+            observable.notifyObservers();
         } catch (IOException e) {
-            System.out.println("Announce failed.");
+            e.printStackTrace();
             // It's not critical if the announce is not sent
         }
     }

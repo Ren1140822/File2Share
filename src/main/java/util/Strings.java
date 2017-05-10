@@ -15,6 +15,6 @@ public final class Strings {
      * @return true if it is null or empty or white space.
      */
     public static boolean isNullOrEmptyOrWhiteSpace(String s) {
-        return s == null ? false : s.trim().length() > 0;
+        return s == null ? true : s.trim().length() <= 0;
     }
 }

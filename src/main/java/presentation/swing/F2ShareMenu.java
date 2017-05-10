@@ -6,62 +6,86 @@
 package presentation.swing;
 
 import application.StartConfiguration;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import connection.AnnounceTimerTask;
+import connection.UdpReceiverThread;
+import domain.DataFile;
+import domain.RemoteFile;
+import persistence.DataFileRepository;
+import presentation.swing.components.DataFileListCellRenderer;
+import presentation.swing.components.DataFileListModel;
+import presentation.swing.components.RemoteFileListCellRenderer;
+import presentation.swing.components.RemoteFileListModel;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.BorderFactory;
-import javax.swing.JFrame;
-import javax.swing.JList;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.KeyStroke;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 
 /**
+ * Represents the main menu of the application.
  *
+ * @author Ivo Ferro
  * @author Pedro Fernandes
+ * @author Renato Olveira
  */
-public class F2ShareMenu extends JFrame{
-    
+public class F2ShareMenu extends JFrame implements Observer {
+
+    private static final int WIDTH = 500, LENGTH = 500;
+    private static final String DOWNLOAD = "Download";
+    private static final String SHARE = "Share";
     private StartConfiguration configuration;
     private JPanel panelShared;
     private JPanel panelDownload;
     private JList listShared;
-    private JList listDownload;    
-    
-    private static final int WIDTH = 500, LENGTH = 500;
-    private static final String DOWNLOAD = "Download";
-    private static final String SHARE = "Share";
-    
-    public F2ShareMenu() throws IOException{
+    private JList listDownload;
+
+    private Set<RemoteFile> remoteFiles;
+    private Set<DataFile> dataFiles;
+
+    public F2ShareMenu() {
         super("F2Share");
-        
-        configuration = new StartConfiguration();
+
+        try {
+            configuration = new StartConfiguration();
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "There was an error reading configuration file");
+            e.printStackTrace();
+        }
+
+        // TODO fill remoteFiles and dataFiles
+        remoteFiles = new TreeSet<>();
+        try {
+            dataFiles = new TreeSet(DataFileRepository.getSharedFiles());
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "There was an error reading local files");
+            e.printStackTrace();
+        }
 
         createComponents();
-        
+
+        UdpReceiverThread udpReceiverThread = new UdpReceiverThread(remoteFiles);
+        udpReceiverThread.addObserver(this);
+        udpReceiverThread.start();
+
+        // FIXME get seconds from config
+        int secondsToAnnounce = 30;
+        AnnounceTimerTask announceTimerTask = new AnnounceTimerTask(dataFiles);
+        announceTimerTask.addObserver(this);
+        java.util.Timer timer = new java.util.Timer();
+        timer.schedule(announceTimerTask, 0, secondsToAnnounce * 1000);
+
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(WIDTH, LENGTH));
         pack();
-        setLocationRelativeTo(null);      
+        setLocationRelativeTo(null);
         setVisible(true);
-        
+
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -69,90 +93,93 @@ public class F2ShareMenu extends JFrame{
             }
         });
     }
-    
+
     private void createComponents() {
-        
+
         createMenuBar();
 
         add(createTabPanels(), BorderLayout.CENTER);
 
     }
-    
-    private JTabbedPane createTabPanels(){
+
+    private JTabbedPane createTabPanels() {
         JTabbedPane tabbedPane = new JTabbedPane();
-        
+
         tabbedPane.add(DOWNLOAD, createDownloadPanel());
         tabbedPane.add(SHARE, createSharedPanel());
-        
+
         return tabbedPane;
     }
-    
-    private JPanel createDownloadPanel(){
+
+    private JPanel createDownloadPanel() {
         panelDownload = new JPanel(new BorderLayout());
-        
-        listDownload = new JList(new ArrayList().toArray());
-        
+
+        RemoteFileListModel remoteFileListModel = new RemoteFileListModel(remoteFiles);
+        listDownload = new JList(remoteFileListModel);
+        listDownload.setCellRenderer(new RemoteFileListCellRenderer());
+
         panelDownload.add(createPanelList(listDownload));
-        
+
         return panelDownload;
     }
-    
-    private JPanel createSharedPanel(){
+
+    private JPanel createSharedPanel() {
         panelShared = new JPanel(new BorderLayout());
-        
-        
-        listShared = new JList(new ArrayList().toArray());
-        
+
+        DataFileListModel dataFileListModel = new DataFileListModel(dataFiles);
+        listShared = new JList(dataFileListModel);
+        listShared.setCellRenderer(new DataFileListCellRenderer());
+
         panelShared.add(createPanelList(listShared), BorderLayout.CENTER);
-        
+
         return panelShared;
     }
-    
+
     private JScrollPane createPanelList(JList jlist) {
 
         jlist.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane scrPane = new JScrollPane(jlist);
-        
+
         int aux = 20;
-        scrPane.setBorder(BorderFactory.createEmptyBorder( aux, aux, aux, aux));
+        scrPane.setBorder(BorderFactory.createEmptyBorder(aux, aux, aux, aux));
 
         return scrPane;
     }
-    
-    private JMenuBar createMenuBar(){
+
+    private JMenuBar createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
         setJMenuBar(menuBar);
-        
+
         menuBar.add(createFileMenu());
         menuBar.add(createOptionsMenu());
-        
+
         return menuBar;
     }
-    
-    private JMenu createFileMenu(){
+
+    private JMenu createFileMenu() {
         JMenu menu = new JMenu("File");
         menu.setMnemonic(KeyEvent.VK_F);
-        
+
         menu.add(createItemConfigurations());
         menu.addSeparator();
         menu.add(createItemExit());
-        
+
         return menu;
-        
+
     }
-    
-    private JMenu createOptionsMenu(){
+
+    private JMenu createOptionsMenu() {
         JMenu menu = new JMenu("Options");
         menu.setMnemonic(KeyEvent.VK_O);
-        
+
         menu.add(createSubMenuStyle());
         menu.addSeparator();
         menu.add(createItemAbout());
-        
+
         return menu;
-        
+
     }
-    
+
     private JMenu createSubMenuStyle() {
         JMenu menu = new JMenu("Style");
         menu.setMnemonic(KeyEvent.VK_S);
@@ -163,7 +190,7 @@ public class F2ShareMenu extends JFrame{
 
         return menu;
     }
-    
+
     private JMenuItem createItemStyle(UIManager.LookAndFeelInfo info) {
         JMenuItem item = new JMenuItem(info.getName());
 
@@ -189,7 +216,7 @@ public class F2ShareMenu extends JFrame{
         });
         return item;
     }
-    
+
     private JMenuItem createItemConfigurations() {
         JMenuItem item = new JMenuItem("Configurations", KeyEvent.VK_C);
         item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.ALT_MASK));
@@ -205,9 +232,10 @@ public class F2ShareMenu extends JFrame{
         });
         return item;
     }
-    
+
     /**
      * cria MenuItem Sair
+     *
      * @return MenuItem Sair
      */
     private JMenuItem createItemExit() {
@@ -221,31 +249,31 @@ public class F2ShareMenu extends JFrame{
         });
         return item;
     }
-    
+
     private JMenuItem createItemAbout() {
         JMenuItem item = new JMenuItem("About", KeyEvent.VK_A);
         item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_MASK));
         item.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(F2ShareMenu.this,                   
-                          "F2Share\n\n"
-                        + "1060503 - Pedro Fernandes\n"
-                        + "1140822 - Renato Oliveira\n" 
-                        + "1151159 - Ivo Ferro\n"                        
-                        +  "\nRCOMP - 2DD - 2016/2017\n",                            
-                    "About",
-                    JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(F2ShareMenu.this,
+                        "F2Share\n\n"
+                                + "1060503 - Pedro Fernandes\n"
+                                + "1140822 - Renato Oliveira\n"
+                                + "1151159 - Ivo Ferro\n"
+                                + "\nRCOMP - 2DD - 2016/2017\n",
+                        "About",
+                        JOptionPane.INFORMATION_MESSAGE);
             }
         });
         return item;
     }
-    
-    private void configurations() throws IOException{
+
+    private void configurations() throws IOException {
         final ChangeConfigurationsUI c = new ChangeConfigurationsUI(F2ShareMenu.this);
     }
-    
-    private void exitAPP(){
+
+    private void exitAPP() {
         String[] op = {"Yes", "No"};
         String question = "Close aplication?";
         int opcao = JOptionPane.showOptionDialog(F2ShareMenu.this, question,
@@ -255,7 +283,14 @@ public class F2ShareMenu extends JFrame{
             dispose();
         } else {
             setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        }       
+        }
     }
-    
+
+    @Override
+    public void update(Observable observable, Object o) {
+        DataFileListModel dataFileListModel = new DataFileListModel(dataFiles);
+        listShared.setModel(dataFileListModel);
+        RemoteFileListModel remoteFileListModel = new RemoteFileListModel(remoteFiles);
+        listDownload.setModel(remoteFileListModel);
+    }
 }
