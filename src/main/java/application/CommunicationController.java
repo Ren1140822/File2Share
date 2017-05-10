@@ -6,11 +6,9 @@
 package application;
 
 import domain.DataFile;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,9 +28,9 @@ public class CommunicationController {
      *
      * @param destinationIP the ip address
      */
-    public CommunicationController(String destinationIP, int portNumber) {
+    public CommunicationController(String destinationIP, ServerSocket serverSock,int portNumber) {
         try {
-            this.tcpConnection = new TcpConnection(destinationIP, portNumber);
+            this.tcpConnection = new TcpConnection(destinationIP, serverSock, portNumber);
         } catch (IOException ex) {
             Logger.getLogger(CommunicationController.class.getName()).log(Level.SEVERE, null, ex);
         }

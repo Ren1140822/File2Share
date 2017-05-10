@@ -54,9 +54,8 @@ public class TcpConnection {
      * @throws UnknownHostException if ip address is invalid
      * @throws IOException if socket isn't created properly
      */
-    public TcpConnection(String destinationAddress, int portNumber) throws UnknownHostException, IOException {
+    public TcpConnection(String destinationAddress, ServerSocket serverSock, int portNumber) throws UnknownHostException, IOException {
         this.destinationAddress = InetAddress.getByName(destinationAddress);
-        ServerSocket serverSock = new ServerSocket(this.portNumber);
         sock = new Socket(this.destinationAddress, portNumber);
         sock2 = serverSock.accept();
         dataOut = new DataOutputStream(sock.getOutputStream());
