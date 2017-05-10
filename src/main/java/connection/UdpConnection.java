@@ -41,24 +41,4 @@ public final class UdpConnection {
 
         sock.close();
     }
-
-    /**
-     * Receives data from a given port.
-     *
-     * @param port port to receive the data
-     * @return received data
-     * @throws IOException input/output exception
-     */
-    public static byte[] receive(int port) throws IOException {
-        byte[] data = new byte[MAXIMUM_BYTES_PAYLOAD];
-        DatagramSocket sock = new DatagramSocket(port);
-
-        DatagramPacket udpPacket = new DatagramPacket(data, data.length);
-
-        udpPacket.setData(data);
-        udpPacket.setLength(data.length);
-        sock.receive(udpPacket);
-
-        return data;
-    }
 }

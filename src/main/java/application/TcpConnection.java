@@ -5,12 +5,7 @@
  */
 package application;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -52,7 +47,7 @@ public class TcpConnection {
      *
      * @param destinationAddress the destination ip address in string
      * @throws UnknownHostException if ip address is invalid
-     * @throws IOException if socket isn't created properly
+     * @throws IOException          if socket isn't created properly
      */
     public TcpConnection(String destinationAddress, ServerSocket serverSock, int portNumber) throws UnknownHostException, IOException {
         this.destinationAddress = InetAddress.getByName(destinationAddress);
@@ -69,7 +64,7 @@ public class TcpConnection {
      * @param file the file to send its size
      * @return true if file size sent
      * @throws FileNotFoundException if file not found
-     * @throws IOException if failed to write
+     * @throws IOException           if failed to write
      */
     public boolean sendFileSize(File file) throws FileNotFoundException, IOException {
         byte[] fileBytes = Files.readAllBytes(file.toPath());
@@ -94,11 +89,11 @@ public class TcpConnection {
      * Downloads a file from a socket.
      *
      * @param fileName the name of the new file
-     * @param path the path of the new file
+     * @param path     the path of the new file
      * @param fileSize the size of the file receiving
      * @return true if file downloaded successfully
      * @throws FileNotFoundException if file not found
-     * @throws IOException if file not dowloaded from socket
+     * @throws IOException           if file not dowloaded from socket
      */
     public boolean downloadFile(String fileName, String path, int fileSize) throws FileNotFoundException, IOException {
         byte[] fileData = new byte[fileSize];
@@ -112,28 +107,29 @@ public class TcpConnection {
 
     /**
      * Reads the next 4 bytes of data into an integer.
+     *
      * @return the integer read
-     * @throws IOException 
+     * @throws IOException
      */
     public int readFileSize() throws IOException {
         int fileSize = 0;
         fileSize = dataIn.readInt();
         return fileSize;
     }
-    
+
     /**
      * Reads information regarding the file requested by other user.
+     *
      * @return the string containing the information
-     * @throws IOException 
+     * @throws IOException
      */
-    public String readFileRequestInfo() throws IOException
-    {
-          //TODO: Create semaphore to prevent this to run while downloadFile method is running
-         int requestSize = readFileSize();
-         byte[] fileData = new byte[requestSize];
-         dataIn.readFully(fileData, 0, fileData.length);
-         String downloadInfo = Arrays.toString(fileData);
-         return downloadInfo;
+    public String readFileRequestInfo() throws IOException {
+        //TODO: Create semaphore to prevent this to run while downloadFile method is running
+        int requestSize = readFileSize();
+        byte[] fileData = new byte[requestSize];
+        dataIn.readFully(fileData, 0, fileData.length);
+        String downloadInfo = Arrays.toString(fileData);
+        return downloadInfo;
     }
 
     /**
@@ -150,6 +146,7 @@ public class TcpConnection {
 
     /**
      * Gets the current bound port number.
+     *
      * @return the port number
      */
     public int getCurrentPortNumber() {
