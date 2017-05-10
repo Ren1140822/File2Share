@@ -4,12 +4,15 @@
 package connection;
 
 import domain.DataFile;
+import domain.RemoteFile;
 import persistence.DataFileRepository;
 import util.Bytes;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Represents a service to make announcements in the network.
@@ -39,7 +42,7 @@ public class AnnounceService {
         int udpPort = 9999;
 
         // FIXME get dynamic tcp port
-        int tcpPort = 9999;
+        int tcpPort = 8888;
         byte tcpPortByte[] = ByteBuffer.allocate(4).putInt(tcpPort).array();
         Bytes.insertArrayIntoArray(data, 0, tcpPortByte);
 

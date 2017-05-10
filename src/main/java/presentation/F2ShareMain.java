@@ -23,7 +23,7 @@ public class F2ShareMain {
      */
     public static void main(String[] args) throws IOException {
 
-        // FIXME either make configuration a singleton or instantiate it here
+        // FIXME either make configuration a singleton or instantiate it here and send to menu
 
         // TODO not sure yet where this is going to be
         int secondsToAnnounce = 30;
