@@ -14,8 +14,8 @@ public class CustomFileFilter implements FileFilter {
     @Override
     public boolean accept(File file) {
 
-        boolean ignoreFolders = true;
-        boolean ignoreFilesWithoutExtension = true;
+        boolean ignoreFolders = Configuration.getIgnoreFolders();
+        boolean ignoreFilesWithoutExtension = Configuration.getIgnoreFilesWithoutExtension();
         String[] ignoreFiles = Configuration.getIgnoreFiles();
         String[] ignoreFilesStartingWith =  Configuration.getIgnoreFilesStartingWith();
         String[] ignoreFilesWithExtension =  Configuration.getIgnoreFilesWithExtension();

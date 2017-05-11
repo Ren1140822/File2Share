@@ -16,6 +16,8 @@ public class Configuration {
     private static Integer refreshFileTime;
     private static String sharedFolderName;
     private static String downloadFolderName;
+    private static boolean ignoreFolders;
+    private static boolean ignoreFilesWithoutExtension;
     private static String[] ignoreFiles;
     private static String[] ignoreFilesStartingWith;
     private static String[] ignoreFilesWithExtension;
@@ -26,6 +28,8 @@ public class Configuration {
     private static final String DEFAULT_FOLDER_PREFIX = "";
     private static final String DEFAULT_SHARED_FOLDER_NAME = DEFAULT_FOLDER_PREFIX + "shared";
     private static final String DEFAULT_DOWNLOAD_FOLDER_NAME = DEFAULT_FOLDER_PREFIX + "download";
+    private static final boolean DEFAULT_IGNORE_FOLDERS = true;
+    private static final boolean DEFAULT_IGNORE_FILES_WITHOUT_EXTENSION = true;
     private static final String[] DEFAULT_IGNORE_FILES = {"sys", "etc", "bootmgr.efi"};
     private static final String[] DEFAULT_IGNORE_FILES_STARTING_WITH = {".", "_", "~"};
     private static final String[] DEFAULT_IGNORE_FILES_WITH_EXTENSION = {"store", "db"};
@@ -39,15 +43,23 @@ public class Configuration {
         Configuration.refreshFileTime = DEFAULT_REFRESH_FILE_TIME;
         Configuration.sharedFolderName = DEFAULT_SHARED_FOLDER_NAME;
         Configuration.downloadFolderName = DEFAULT_DOWNLOAD_FOLDER_NAME;
+        Configuration.ignoreFolders = DEFAULT_IGNORE_FOLDERS;
+        Configuration.ignoreFilesWithoutExtension = DEFAULT_IGNORE_FILES_WITHOUT_EXTENSION;
         Configuration.ignoreFiles = DEFAULT_IGNORE_FILES;
         Configuration.ignoreFilesStartingWith = DEFAULT_IGNORE_FILES_STARTING_WITH;
         Configuration.ignoreFilesWithExtension = DEFAULT_IGNORE_FILES_WITH_EXTENSION;
     }
 
     public Configuration(Integer UDPPortNumber, Integer UDPTimeAnnouncement,
-                         Integer refreshFileTime, String sharedFolderName, String downloadFolderName) {
+                         Integer refreshFileTime, String sharedFolderName, String downloadFolderName,
+                         boolean ignoreFolders, boolean ignoreFilesWithoutExtension, String[] ignoreFiles,
+                         String[] ignoreFilesStartingWith, String[] ignoreFilesWithExtension) {
 
         if (UDPPortNumber == null || UDPTimeAnnouncement == null || refreshFileTime == null) {
+            throw new IllegalStateException();
+        }
+        
+        if (ignoreFiles == null || ignoreFilesStartingWith == null || ignoreFilesWithExtension == null) {
             throw new IllegalStateException();
         }
 
@@ -64,9 +76,11 @@ public class Configuration {
         Configuration.refreshFileTime = refreshFileTime;
         Configuration.sharedFolderName = DEFAULT_FOLDER_PREFIX + sharedFolderName;
         Configuration.downloadFolderName = DEFAULT_FOLDER_PREFIX + downloadFolderName;
-        Configuration.ignoreFiles = DEFAULT_IGNORE_FILES;
-        Configuration.ignoreFilesStartingWith = DEFAULT_IGNORE_FILES_STARTING_WITH;
-        Configuration.ignoreFilesWithExtension = DEFAULT_IGNORE_FILES_WITH_EXTENSION;
+        Configuration.ignoreFolders = ignoreFolders;
+        Configuration.ignoreFilesWithoutExtension = ignoreFilesWithoutExtension;
+        Configuration.ignoreFiles = ignoreFiles;
+        Configuration.ignoreFilesStartingWith = ignoreFilesStartingWith;
+        Configuration.ignoreFilesWithExtension = ignoreFilesWithExtension;
     }
 
     /**
@@ -114,6 +128,8 @@ public class Configuration {
                 "\nrefresh_file_time: " + getRefreshFileTime() +
                 "\nshared_folder: " + getSharedFolderName() +
                 "\ndownload_folder: " + getDownloadFolderName() +
+                "\nget_ignore_folders: " + getIgnoreFolders() +
+                "\nignore_files_without_extension: " + getIgnoreFilesWithoutExtension() +
                 "\nignore_files: " + Arrays.toString(getIgnoreFiles()) + 
                 "\nignore_files_starting_with: " + Arrays.toString(getIgnoreFilesStartingWith()) +
                 "\nignore_files_with_extension: " + Arrays.toString(getIgnoreFilesWithExtension());
@@ -152,6 +168,20 @@ public class Configuration {
      */
     public static String getDownloadFolderName() {
         return downloadFolderName;
+    }
+    
+    /**
+     * @return the ignoreFolders
+     */
+    public static boolean getIgnoreFolders() {
+        return ignoreFolders;
+    }
+    
+    /**
+     * @return the ignoreFilesWithoutExtension
+     */
+    public static boolean getIgnoreFilesWithoutExtension() {
+        return ignoreFilesWithoutExtension;
     }
     
     /**
