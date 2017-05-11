@@ -29,10 +29,10 @@ public class DataFileRepository {
         File[] listOfFiles = folder.listFiles(new CustomFileFilter());
 
         for (File file : listOfFiles) {
-                String fileName = file.getName();
-                byte[] data = Files.readAllBytes(file.toPath());
-                // FIXME if the file has an extension to be ignored, ignore it
-                dataFiles.add(new DataFile(fileName, data));
+            String fileName = file.getName();
+            byte[] data = Files.readAllBytes(file.toPath());
+            // FIXME if the file has an extension to be ignored, ignore it
+            dataFiles.add(new DataFile(fileName, data));
         }
 
         return dataFiles;

@@ -7,11 +7,9 @@ import domain.RemoteFile;
 import framework.BaseObservable;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
+import java.net.*;
 import java.nio.ByteBuffer;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Observer;
 import java.util.Set;
@@ -59,45 +57,47 @@ public class UdpReceiverThread extends Thread {
                 try {
                     sock.receive(udpPacket);
 
-                    ByteBuffer wrapped = ByteBuffer.wrap(data);
-                    int tcpPort = wrapped.getInt();
-                    byte announcements = wrapped.get();
+                    InetAddress address = udpPacket.getAddress();
+                    //if (!isLocalAddress(address)) {
 
-                    for (int i = 0; i < announcements; i++) {
-                        try {
-                            byte nameLength = wrapped.get();
+                        ByteBuffer wrapped = ByteBuffer.wrap(data);
+                        int tcpPort = wrapped.getInt();
+                        byte announcements = wrapped.get();
 
-                            byte[] nameBytes = new byte[nameLength];
-                            wrapped.get(nameBytes, 0, nameLength);
-                            String name = null;
-                            name = new String(nameBytes, "UTF-8");
+                        for (int i = 0; i < announcements; i++) {
+                            try {
+                                byte nameLength = wrapped.get();
 
-                            InetAddress address = udpPacket.getAddress();
+                                byte[] nameBytes = new byte[nameLength];
+                                wrapped.get(nameBytes, 0, nameLength);
+                                String name = null;
+                                name = new String(nameBytes, "UTF-8");
 
-                            RemoteFile remoteFile = new RemoteFile(name, address, tcpPort);
+                                RemoteFile remoteFile = new RemoteFile(name, address, tcpPort);
 
-                            remoteFile.addObserver(observer);
+                                remoteFile.addObserver(observer);
 
-                            if (remoteFiles.contains(remoteFile)) {
-                                for (Iterator<RemoteFile> it = remoteFiles.iterator(); it.hasNext(); ) {
-                                    RemoteFile copy = it.next();
-                                    if (copy.equals(remoteFile)) {
-                                        copy.cancelTimer();
-                                        copy.activateTimer();
+                                if (remoteFiles.contains(remoteFile)) {
+                                    for (Iterator<RemoteFile> it = remoteFiles.iterator(); it.hasNext(); ) {
+                                        RemoteFile copy = it.next();
+                                        if (copy.equals(remoteFile)) {
+                                            copy.cancelTimer();
+                                            copy.activateTimer();
+                                        }
                                     }
+                                } else {
+                                    remoteFiles.add(remoteFile);
+                                    remoteFile.activateTimer();
                                 }
-                            } else {
-                                remoteFiles.add(remoteFile);
-                                remoteFile.activateTimer();
+
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
                         }
-                    }
 
-                    observable.activateChanges();
-                    observable.notifyObservers();
+                        observable.activateChanges();
+                        observable.notifyObservers();
+                    //}
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -105,5 +105,20 @@ public class UdpReceiverThread extends Thread {
         } catch (SocketException e) {
             e.printStackTrace();
         }
+    }
+
+    private boolean isLocalAddress(InetAddress address) throws SocketException {
+        Enumeration e = NetworkInterface.getNetworkInterfaces();
+        while (e.hasMoreElements()) {
+            NetworkInterface n = (NetworkInterface) e.nextElement();
+            Enumeration ee = n.getInetAddresses();
+            while (ee.hasMoreElements()) {
+                InetAddress i = (InetAddress) ee.nextElement();
+                if (i.equals(address)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
