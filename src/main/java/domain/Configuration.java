@@ -23,7 +23,7 @@ public class Configuration {
     private static final Integer DEFAULT_UDP_PORT_NUMBER = 32034;
     private static final Integer DEFAULT_UDP_TIME_ANNOUCEMENT = 30; // seconds
     private static final Integer DEFAULT_REFRESH_FILE_TIME = 45; // seconds
-    private static final String DEFAULT_FOLDER_PREFIX = "/";
+    private static final String DEFAULT_FOLDER_PREFIX = "";
     private static final String DEFAULT_SHARED_FOLDER_NAME = DEFAULT_FOLDER_PREFIX + "shared";
     private static final String DEFAULT_DOWNLOAD_FOLDER_NAME = DEFAULT_FOLDER_PREFIX + "download";
     private static final String[] DEFAULT_IGNORE_FILES = {"sys", "etc", "bootmgr.efi"};

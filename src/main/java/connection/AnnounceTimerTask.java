@@ -26,11 +26,6 @@ public class AnnounceTimerTask extends TimerTask {
         observable = new BaseObservable();
         this.tcpPort = tcpPort;
     }
-
-    public AnnounceTimerTask(Set<DataFile> dataFiles) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
     public void addObserver(Observer observer) {
         this.observable.addObserver(observer);
     }

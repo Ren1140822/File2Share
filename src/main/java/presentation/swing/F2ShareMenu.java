@@ -74,8 +74,11 @@ public class F2ShareMenu extends JFrame implements Observer {
         udpReceiverThread.addObserver(this);
         udpReceiverThread.start();
 
+        // FIXME get tcp port dynamically
+        int tcpPort = 8888;
+
         int secondsToAnnounce = Configuration.getUDPTimeAnnouncement();
-        AnnounceTimerTask announceTimerTask = new AnnounceTimerTask(dataFiles);
+        AnnounceTimerTask announceTimerTask = new AnnounceTimerTask(dataFiles, tcpPort);
         announceTimerTask.addObserver(this);
         java.util.Timer timer = new java.util.Timer();
         timer.schedule(announceTimerTask, 0, secondsToAnnounce * 1000);
