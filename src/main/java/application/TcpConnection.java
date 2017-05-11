@@ -17,14 +17,14 @@ import java.util.Arrays;
  * Represents a TcpConnection.
  */
 public class TcpConnection {
-
+    
     private final int portNumber = 0;
 
     /**
      * A socket used for communication.
      */
     private Socket sock;
-
+    
     private Socket sock2;
 
     /**
@@ -47,15 +47,15 @@ public class TcpConnection {
      *
      * @param destinationAddress the destination ip address in string
      * @throws UnknownHostException if ip address is invalid
-     * @throws IOException          if socket isn't created properly
+     * @throws IOException if socket isn't created properly
      */
-    public TcpConnection(String destinationAddress, ServerSocket serverSock, int portNumber) throws UnknownHostException, IOException {
-        this.destinationAddress = InetAddress.getByName(destinationAddress);
+    public TcpConnection(InetAddress destinationAddress, TcpServer server, int portNumber) throws UnknownHostException, IOException {
+        this.destinationAddress = destinationAddress;
         sock = new Socket(this.destinationAddress, portNumber);
-        sock2 = serverSock.accept();
+        //sock2 = server.currentServerSocket();
         dataOut = new DataOutputStream(sock.getOutputStream());
-        dataIn = new DataInputStream(sock2.getInputStream());
-
+        dataIn = new DataInputStream(sock.getInputStream());
+        
     }
 
     /**
@@ -64,7 +64,7 @@ public class TcpConnection {
      * @param file the file to send its size
      * @return true if file size sent
      * @throws FileNotFoundException if file not found
-     * @throws IOException           if failed to write
+     * @throws IOException if failed to write
      */
     public boolean sendFileSize(File file) throws FileNotFoundException, IOException {
         byte[] fileBytes = Files.readAllBytes(file.toPath());
@@ -89,17 +89,18 @@ public class TcpConnection {
      * Downloads a file from a socket.
      *
      * @param fileName the name of the new file
-     * @param path     the path of the new file
+     * @param path the path of the new file
      * @param fileSize the size of the file receiving
      * @return true if file downloaded successfully
      * @throws FileNotFoundException if file not found
-     * @throws IOException           if file not dowloaded from socket
+     * @throws IOException if file not dowloaded from socket
      */
     public boolean downloadFile(String fileName, String path, int fileSize) throws FileNotFoundException, IOException {
         byte[] fileData = new byte[fileSize];
         dataIn.readFully(fileData, 0, fileData.length);
-        //path += fileName;
-        FileOutputStream fileOut = new FileOutputStream(path);
+        path += fileName;
+        File file = new File(path);
+        FileOutputStream fileOut = new FileOutputStream(path,false);
         fileOut.write(fileData);
         fileOut.close();
         return true;
@@ -117,19 +118,26 @@ public class TcpConnection {
         return fileSize;
     }
 
-    /**
+     /**
      * Reads information regarding the file requested by other user.
      *
      * @return the string containing the information
      * @throws IOException
      */
     public String readFileRequestInfo() throws IOException {
-        //TODO: Create semaphore to prevent this to run while downloadFile method is running
-        int requestSize = readFileSize();
+        int fileSize = 0;
+        fileSize = dataIn.readInt();
+        int requestSize = fileSize;
         byte[] fileData = new byte[requestSize];
         dataIn.readFully(fileData, 0, fileData.length);
         String downloadInfo = Arrays.toString(fileData);
         return downloadInfo;
+    }
+    
+    public boolean sendFileRequest(String name) throws IOException {
+        dataOut.writeInt(name.length());
+        dataOut.writeChars(name);
+        return true;
     }
 
     /**

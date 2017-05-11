@@ -22,7 +22,7 @@ public class AnnounceService {
      *
      * @throws IOException input/output exception
      */
-    public List<DataFile> sendFilesNames() throws IOException {
+    public List<DataFile> sendFilesNames(int finalTcpPort) throws IOException {
 
         List<DataFile> filesToAnnounce = DataFileRepository.getSharedFiles();
 
@@ -39,7 +39,7 @@ public class AnnounceService {
         int udpPort = Configuration.getUDPPortNumber();
 
         // FIXME get dynamic tcp port
-        int tcpPort = 8888;
+        int tcpPort = finalTcpPort;
         byte tcpPortByte[] = ByteBuffer.allocate(4).putInt(tcpPort).array();
         Bytes.insertArrayIntoArray(data, 0, tcpPortByte);
 

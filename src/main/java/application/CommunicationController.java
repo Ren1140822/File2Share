@@ -8,7 +8,8 @@ package application;
 import domain.DataFile;
 import java.io.File;
 import java.io.IOException;
-import java.net.ServerSocket;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,9 +28,9 @@ public class CommunicationController {
      *
      * @param destinationIP the ip address
      */
-    public CommunicationController(String destinationIP, ServerSocket serverSock,int portNumber) {
+    public CommunicationController(InetAddress destinationIP, TcpServer server, int portNumber) {
         try {
-            this.tcpConnection = new TcpConnection(destinationIP, serverSock, portNumber);
+            this.tcpConnection = new TcpConnection(destinationIP, server, portNumber);
         } catch (IOException ex) {
             Logger.getLogger(CommunicationController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -73,28 +74,27 @@ public class CommunicationController {
      * Downloads a data file
      *
      * @param fileName the NEW file name
-     * @param path     the NEW path
+     * @param path the NEW path
      * @return true if file downloaded
      */
-    public boolean downloadDataFile(String fileName, String path) {
-        final String threadFileName = fileName;
-        final String threadFilePath = path;
-        Thread thread = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    int fileSize;
-                    fileSize = tcpConnection.readFileSize();
-                    tcpConnection.downloadFile(threadFileName, threadFilePath, fileSize);
-                    this.join();
-                } catch (IOException ex) {
-                    Logger.getLogger(CommunicationController.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(CommunicationController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        };
-        thread.start();
+    public boolean downloadDataFile(String fileName, String path) throws IOException {
+   
+            final String threadFileName = fileName;
+            final String threadFilePath = path;
+            int fileSize;
+            fileSize = tcpConnection.readFileSize();
+            tcpConnection.downloadFile(threadFileName, threadFilePath, fileSize);
+            System.out.println("Downloaded");
+           return true;
+    }
+
+    public boolean sendFileRequest(String name) {
+        try {
+            tcpConnection.sendFileRequest(name);
+
+        } catch (IOException ex) {
+            Logger.getLogger(CommunicationController.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return true;
     }
 

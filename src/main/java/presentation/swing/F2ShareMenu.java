@@ -21,7 +21,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
@@ -69,7 +68,7 @@ public class F2ShareMenu extends JFrame implements Observer {
             e.printStackTrace();
         }
 
-        
+        createComponents();
 
         UdpReceiverThread udpReceiverThread = new UdpReceiverThread(remoteFiles);
         udpReceiverThread.addObserver(this);
@@ -80,8 +79,6 @@ public class F2ShareMenu extends JFrame implements Observer {
         announceTimerTask.addObserver(this);
         java.util.Timer timer = new java.util.Timer();
         timer.schedule(announceTimerTask, 0, secondsToAnnounce * 1000);
-
-        createComponents();
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(WIDTH, LENGTH));
@@ -117,10 +114,9 @@ public class F2ShareMenu extends JFrame implements Observer {
     private JPanel createDownloadPanel() {
         panelDownload = new JPanel(new BorderLayout());
 
-        //RemoteFileListModel remoteFileListModel = new RemoteFileListModel(remoteFiles);
-        //listDownload = new JList(remoteFileListModel);
-        listDownload = new JList();
-        //listDownload.setCellRenderer(new RemoteFileListCellRenderer());
+        RemoteFileListModel remoteFileListModel = new RemoteFileListModel(remoteFiles);
+        listDownload = new JList(remoteFileListModel);
+        listDownload.setCellRenderer(new RemoteFileListCellRenderer());
 
         panelDownload.add(createPanelList(listDownload));
 
@@ -130,10 +126,9 @@ public class F2ShareMenu extends JFrame implements Observer {
     private JPanel createSharedPanel() {
         panelShared = new JPanel(new BorderLayout());
 
-        //DataFileListModel dataFileListModel = new DataFileListModel(dataFiles);
-        //listShared = new JList(dataFileListModel);
-        listShared = new JList();
-        //listShared.setCellRenderer(new DataFileListCellRenderer());
+        DataFileListModel dataFileListModel = new DataFileListModel(dataFiles);
+        listShared = new JList(dataFileListModel);
+        listShared.setCellRenderer(new DataFileListCellRenderer());
 
         panelShared.add(createPanelList(listShared), BorderLayout.CENTER);
 
@@ -293,7 +288,7 @@ public class F2ShareMenu extends JFrame implements Observer {
 
     @Override
     public void update(Observable observable, Object o) {
-/**
+
         if (observable instanceof RemoteFile) {
             RemoteFile remoteFile = (RemoteFile) observable;
             remoteFiles.remove(remoteFile);
@@ -304,6 +299,5 @@ public class F2ShareMenu extends JFrame implements Observer {
         listShared.setModel(dataFileListModel);
         RemoteFileListModel remoteFileListModel = new RemoteFileListModel(remoteFiles);
         listDownload.setModel(remoteFileListModel);
-*/
     }
 }
