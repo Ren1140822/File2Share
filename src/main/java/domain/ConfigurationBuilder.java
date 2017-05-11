@@ -17,6 +17,11 @@ public class ConfigurationBuilder {
     private Integer refreshFileTime;
     private String sharedFolderName;
     private String downloadFolderName;
+    private boolean ignoreFolders;
+    private boolean ignoreFilesWithoutExtension;
+    private String[] ignoreFiles;
+    private String[] ignoreFilesStartingWith;
+    private String[] ignoreFilesWithExtension;
 
     public ConfigurationBuilder() {
     }
@@ -60,13 +65,49 @@ public class ConfigurationBuilder {
         }
         return this;
     }
+    
+    public ConfigurationBuilder withIgnoreFolders(boolean ignoreFolders) {
+        this.ignoreFolders = ignoreFolders;
+        return this;
+    }
+    
+    public ConfigurationBuilder withIgnoreFilesWithoutExtension(boolean ignoreFilesWithoutExtension) {
+        this.ignoreFilesWithoutExtension = ignoreFilesWithoutExtension;
+        return this;
+    }
+    
+    public ConfigurationBuilder withIgnoreFiles(String[] ignoreFiles) {
+        this.ignoreFiles = ignoreFiles;
+        if (ignoreFiles == null) {
+            throw new IllegalStateException("Invalid Download Folder name!");
+        }
+        return this;
+    }
+    
+    public ConfigurationBuilder withIgnoreFilesStartingWith(String[] ignoreFilesStartingWith) {
+        this.ignoreFilesStartingWith = ignoreFilesStartingWith;
+        if (ignoreFilesStartingWith == null) {
+            throw new IllegalStateException("Invalid Download Folder name!");
+        }
+        return this;
+    }
+    
+    public ConfigurationBuilder withIgnoreFilesWithExtension(String[] ignoreFilesWithExtension) {
+        this.ignoreFilesWithExtension = ignoreFilesWithExtension;
+        if (ignoreFilesWithExtension == null) {
+            throw new IllegalStateException("Invalid Download Folder name!");
+        }
+        return this;
+    }
 
     public Configuration buildConfiguration() {
         if (this == null) {
             return new Configuration();
         } else {
             return new Configuration(this.UDPPortNumber, this.UDPTimeAnnouncement,
-                    this.refreshFileTime, this.sharedFolderName, this.downloadFolderName);
+                    this.refreshFileTime, this.sharedFolderName, this.downloadFolderName,
+            this.ignoreFolders, this.ignoreFilesWithoutExtension, this.ignoreFiles,
+            this.ignoreFilesStartingWith, this.ignoreFilesWithExtension);
         }
     }
 

@@ -18,14 +18,12 @@ import java.util.List;
  */
 public final class StartConfiguration {
 
-    private final String filename;
     private Configuration configuration;
     private ConfigurationBuilder builder;
 
     private static final String DEFAULT_FILENAME = "Config.txt";
 
     public StartConfiguration() throws IOException {
-        this.filename = DEFAULT_FILENAME;
         this.configuration = readConfigurationFile();
     }
 
@@ -36,6 +34,8 @@ public final class StartConfiguration {
     public Configuration readConfigurationFile() throws IOException {
 
         this.builder = new ConfigurationBuilder();
+        
+        String aux;
 
         List<String> rows = readLines(DEFAULT_FILENAME);
         if (rows == null) {
@@ -47,11 +47,30 @@ public final class StartConfiguration {
         Integer refreshTime = Integer.parseInt(rows.get(2));
         String sharedName = rows.get(3).replace("/", "");
         String downloadName = rows.get(4).replace("/", "");
+        boolean ignoreFolders = Boolean.parseBoolean(rows.get(5));
+        boolean ignoreFilesWithoutExtension = Boolean.parseBoolean(rows.get(6));
+        
+        aux = rows.get(7).replace("[", "");
+        aux = aux.replace("]", "");
+        String[] ignoreFiles = aux.split(", ");
+        
+        aux = rows.get(8).replace("[", "");
+        aux = aux.replace("]", "");
+        String[] ignoreFilesStartingWith = aux.split(", ");
+        
+        aux = rows.get(9).replace("[", "");
+        aux = aux.replace("]", "");
+        String[] ignoreFilesWithExtension= aux.split(", ");
 
+        
         builder.withUDPPort(udpPort).withUDPTimeAnnouncement(udpTime)
                 .withRefreshFileTime(refreshTime).withSharedFolderName(sharedName)
-                .withDownloadFolderName(downloadName);
-
+                .withDownloadFolderName(downloadName).withIgnoreFolders(ignoreFolders)
+                .withIgnoreFilesWithoutExtension(ignoreFilesWithoutExtension)
+                .withIgnoreFiles(ignoreFiles)
+                .withIgnoreFilesStartingWith(ignoreFilesStartingWith)
+                .withIgnoreFilesWithExtension(ignoreFilesWithExtension);
+        
         return configuration = builder.buildConfiguration();
 
     }
@@ -66,7 +85,7 @@ public final class StartConfiguration {
 
             while ((row = read.readLine()) != null) {
                 if (row.length() > 0) {
-                    String[] temp = row.split(" ");
+                    String[] temp = row.split(": ");
                     rows.add(temp[1].trim());
                 }
             }
