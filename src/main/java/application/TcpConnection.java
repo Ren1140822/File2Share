@@ -98,7 +98,7 @@ public class TcpConnection {
     public boolean downloadFile(String fileName, String path, int fileSize) throws FileNotFoundException, IOException {
         byte[] fileData = new byte[fileSize];
         dataIn.readFully(fileData, 0, fileData.length);
-        path += fileName;
+        path += "/"+fileName;
         File file = new File(path);
         FileOutputStream fileOut = new FileOutputStream(path,false);
         fileOut.write(fileData);
@@ -135,8 +135,9 @@ public class TcpConnection {
     }
     
     public boolean sendFileRequest(String name) throws IOException {
+       
         dataOut.writeInt(name.length());
-        dataOut.writeChars(name);
+        dataOut.writeBytes(name);
         return true;
     }
 

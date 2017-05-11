@@ -5,6 +5,7 @@
  */
 package application;
 
+import domain.Configuration;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -15,6 +16,7 @@ import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -54,7 +56,7 @@ public class TcpServer {
         fileSize = dataIn.readInt();
         int requestSize = fileSize;
         byte[] fileData = new byte[requestSize];
-        dataIn.read(fileData, 0, fileData.length);
+        dataIn.readFully(fileData, 0, fileData.length);
         String downloadInfo = new String(fileData);
         return downloadInfo;
     }
@@ -72,13 +74,11 @@ public class TcpServer {
                         dataIn = new DataInputStream(sockListener.getInputStream());
                         dataOut = new DataOutputStream(sockListener.getOutputStream());
                         String fileName = readFileRequestInfo();
-                        //TODO - search file from its name
-                        //TODO: get folder from configuration file
-                        String path = "C:/Users/PRenato/Documents/NetBeansProjects/f2share/shared/dmo.png";
-                        // thePath = URLEncoder.encode(thePath, "UTF-8"); 
-                        File file = new File(path);
-                        sendFileSize(file);
-                        sendFile(file);
+                        File file = findFile(fileName);
+                        if (file != null) {
+                            sendFileSize(file);
+                            sendFile(file);
+                        }
                     }
                 } catch (Exception ex) {
                     System.out.println("Error");
@@ -125,5 +125,17 @@ public class TcpServer {
         byte[] fileBytes = Files.readAllBytes(file.toPath());
         dataOut.write(fileBytes);
         return true;
+    }
+
+    public File findFile(String fileName) {
+        File folder = new File(Configuration.getSharedFolderName());
+        File[] files = folder.listFiles();
+        for (File file : files) {
+            boolean isEqual = file.getName().equals(fileName);
+            if (isEqual) {
+                return file;
+            }
+        }
+        return null;
     }
 }

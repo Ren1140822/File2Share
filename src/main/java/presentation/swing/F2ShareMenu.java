@@ -65,20 +65,18 @@ public class F2ShareMenu extends JFrame implements Observer {
 
         // TODO fill remoteFiles and dataFiles
         remoteFiles = new TreeSet<>();
-        
+
         // TODO DataFileRepository.getSharedFiles() => ERROR
         /**
-        try {            
-            dataFiles = new TreeSet(DataFileRepository.getSharedFiles());            
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "There was an error reading local files");
-            e.printStackTrace();
-        }
-        * */
+         * try { dataFiles = new TreeSet(DataFileRepository.getSharedFiles()); }
+         * catch (IOException e) { JOptionPane.showMessageDialog(this, "There
+         * was an error reading local files"); e.printStackTrace(); }
+        *
+         */
         dataFiles = new TreeSet<>();
 
         createComponents();
-        
+
         server = new TcpServer();
         server.start();
 
@@ -133,15 +131,18 @@ public class F2ShareMenu extends JFrame implements Observer {
         listDownload = new JList(remoteFileListModel);
         listDownload.setCellRenderer(new RemoteFileListCellRenderer());
 
-        panelDownload.add(createPanelList(listDownload),BorderLayout.CENTER);
+        panelDownload.add(createPanelList(listDownload), BorderLayout.CENTER);
         JButton button = new JButton("DOWNLOAD");
         button.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent me) {
-                CommunicationController ctrl = new CommunicationController(((RemoteFile)listDownload.getSelectedValue()).getAddress(), server, ((RemoteFile)listDownload.getSelectedValue()).getTcpPort());
-                ctrl.sendFileRequest(((RemoteFile)listDownload.getSelectedValue()).getName());
+                CommunicationController ctrl = new CommunicationController(((RemoteFile) listDownload.getSelectedValue()).getAddress(), server, ((RemoteFile) listDownload.getSelectedValue()).getTcpPort());
+                ctrl.sendFileRequest(((RemoteFile) listDownload.getSelectedValue()).getName());
                 try {
-                    ctrl.downloadDataFile("LOL.png",  "C:/Users/PRenato/Documents/NetBeansProjects/f2share/download/");
+                    JFileChooser chooser = new JFileChooser(Configuration.getDownloadFolderName());
+                    if (chooser.showSaveDialog(F2ShareMenu.this) == JFileChooser.APPROVE_OPTION) {
+                        ctrl.downloadDataFile(chooser.getSelectedFile().getName(),Configuration.getDownloadFolderName());
+                    }
                 } catch (IOException ex) {
                     Logger.getLogger(F2ShareMenu.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -149,26 +150,26 @@ public class F2ShareMenu extends JFrame implements Observer {
 
             @Override
             public void mousePressed(MouseEvent me) {
-            
+
             }
 
             @Override
             public void mouseReleased(MouseEvent me) {
-               
+
             }
 
             @Override
             public void mouseEntered(MouseEvent me) {
-             
+
             }
 
             @Override
             public void mouseExited(MouseEvent me) {
-              
+
             }
 
         });
-        panelDownload.add(button,BorderLayout.SOUTH);
+        panelDownload.add(button, BorderLayout.SOUTH);
         return panelDownload;
     }
 
@@ -307,10 +308,10 @@ public class F2ShareMenu extends JFrame implements Observer {
             public void actionPerformed(ActionEvent e) {
                 JOptionPane.showMessageDialog(F2ShareMenu.this,
                         "F2Share\n\n"
-                                + "1060503 - Pedro Fernandes\n"
-                                + "1140822 - Renato Oliveira\n"
-                                + "1151159 - Ivo Ferro\n"
-                                + "\nRCOMP - 2DD - 2016/2017\n",
+                        + "1060503 - Pedro Fernandes\n"
+                        + "1140822 - Renato Oliveira\n"
+                        + "1151159 - Ivo Ferro\n"
+                        + "\nRCOMP - 2DD - 2016/2017\n",
                         "About",
                         JOptionPane.INFORMATION_MESSAGE);
             }
