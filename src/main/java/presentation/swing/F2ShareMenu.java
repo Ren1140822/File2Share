@@ -288,6 +288,13 @@ public class F2ShareMenu extends JFrame implements Observer {
 
     @Override
     public void update(Observable observable, Object o) {
+
+        if (observable instanceof RemoteFile) {
+            RemoteFile remoteFile = (RemoteFile) observable;
+            remoteFiles.remove(remoteFile);
+            remoteFile.cancelTimer();
+        }
+
         DataFileListModel dataFileListModel = new DataFileListModel(dataFiles);
         listShared.setModel(dataFileListModel);
         RemoteFileListModel remoteFileListModel = new RemoteFileListModel(remoteFiles);

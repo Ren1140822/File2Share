@@ -12,6 +12,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
+import java.util.Iterator;
 import java.util.Observer;
 import java.util.Set;
 
@@ -26,12 +27,15 @@ public class UdpReceiverThread extends Thread {
 
     private final Set<RemoteFile> remoteFiles;
 
+    private Observer observer;
+
     public UdpReceiverThread(Set<RemoteFile> remoteFiles) {
         this.remoteFiles = remoteFiles;
         this.observable = new BaseObservable();
     }
 
     public void addObserver(Observer observer) {
+        this.observer = observer;
         this.observable.addObserver(observer);
     }
 
@@ -71,7 +75,22 @@ public class UdpReceiverThread extends Thread {
                             InetAddress address = udpPacket.getAddress();
 
                             RemoteFile remoteFile = new RemoteFile(name, address, tcpPort);
-                            remoteFiles.add(remoteFile);
+
+                            remoteFile.addObserver(observer);
+
+                            if (remoteFiles.contains(remoteFile)) {
+                                for (Iterator<RemoteFile> it = remoteFiles.iterator(); it.hasNext(); ) {
+                                    RemoteFile copy = it.next();
+                                    if (copy.equals(remoteFile)) {
+                                        copy.cancelTimer();
+                                        copy.activateTimer();
+                                    }
+                                }
+                            } else {
+                                remoteFiles.add(remoteFile);
+                                remoteFile.activateTimer();
+                            }
+
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
