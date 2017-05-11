@@ -8,6 +8,7 @@ package presentation.swing;
 import application.StartConfiguration;
 import connection.AnnounceTimerTask;
 import connection.UdpReceiverThread;
+import domain.Configuration;
 import domain.DataFile;
 import domain.RemoteFile;
 import persistence.DataFileRepository;
@@ -73,8 +74,7 @@ public class F2ShareMenu extends JFrame implements Observer {
         udpReceiverThread.addObserver(this);
         udpReceiverThread.start();
 
-        // FIXME get seconds from config
-        int secondsToAnnounce = 30;
+        int secondsToAnnounce = Configuration.getUDPTimeAnnouncement();
         AnnounceTimerTask announceTimerTask = new AnnounceTimerTask(dataFiles);
         announceTimerTask.addObserver(this);
         java.util.Timer timer = new java.util.Timer();

@@ -3,6 +3,7 @@
  */
 package connection;
 
+import domain.Configuration;
 import domain.DataFile;
 import persistence.DataFileRepository;
 import util.Bytes;
@@ -21,7 +22,7 @@ public class AnnounceService {
      *
      * @throws IOException input/output exception
      */
-    public List<DataFile> sendFilesNames() throws IOException {
+    public List<DataFile> sendFilesNames(int finalTcpPort) throws IOException {
 
         List<DataFile> filesToAnnounce = DataFileRepository.getSharedFiles();
 
@@ -35,11 +36,10 @@ public class AnnounceService {
         byte pos_index = startingPosition;
         byte fileNameSize;
 
-        // FIXME get udp port from configuration
-        int udpPort = 32034;
+        int udpPort = Configuration.getUDPPortNumber();
 
         // FIXME get dynamic tcp port
-        int tcpPort = 8888;
+        int tcpPort = finalTcpPort;
         byte tcpPortByte[] = ByteBuffer.allocate(4).putInt(tcpPort).array();
         Bytes.insertArrayIntoArray(data, 0, tcpPortByte);
 

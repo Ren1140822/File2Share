@@ -19,9 +19,16 @@ public class AnnounceTimerTask extends TimerTask {
 
     private final Set<DataFile> dataFiles;
 
-    public AnnounceTimerTask(Set<DataFile> dataFiles) {
+     private final int tcpPort;
+     
+    public AnnounceTimerTask(Set<DataFile> dataFiles,int tcpPort) {
         this.dataFiles = dataFiles;
         observable = new BaseObservable();
+        this.tcpPort = tcpPort;
+    }
+
+    public AnnounceTimerTask(Set<DataFile> dataFiles) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     public void addObserver(Observer observer) {
@@ -31,10 +38,10 @@ public class AnnounceTimerTask extends TimerTask {
     @Override
     public void run() {
         AnnounceService announceService = new AnnounceService();
-
+        
         try {
             this.dataFiles.clear();
-            this.dataFiles.addAll(announceService.sendFilesNames());
+            this.dataFiles.addAll(announceService.sendFilesNames(this.tcpPort));
             observable.activateChanges();
             observable.notifyObservers();
         } catch (IOException e) {

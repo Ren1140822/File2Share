@@ -6,6 +6,7 @@
 package presentation.swing;
 
 import application.ChangeConfigurationController;
+import domain.Configuration;
 
 import javax.swing.*;
 import java.awt.*;
@@ -203,6 +204,7 @@ public class ChangeConfigurationsUI extends JDialog {
                 txtShared.setEditable(true);
                 txtDownload.setEditable(true);
                 saveBtn.setEnabled(true);
+                editBtn.setEnabled(false);
             }
         });
         return editBtn;

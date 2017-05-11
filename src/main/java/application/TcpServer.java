@@ -6,10 +6,15 @@
 package application;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Arrays;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,6 +33,7 @@ public class TcpServer {
      * A stream used to read data from a socket.
      */
     private DataInputStream dataIn;
+    private DataOutputStream dataOut;
 
     public TcpServer() {
         try {
@@ -48,11 +54,14 @@ public class TcpServer {
         fileSize = dataIn.readInt();
         int requestSize = fileSize;
         byte[] fileData = new byte[requestSize];
-        dataIn.readFully(fileData, 0, fileData.length);
-        String downloadInfo = Arrays.toString(fileData);
+        dataIn.read(fileData, 0, fileData.length);
+        String downloadInfo = new String(fileData);
         return downloadInfo;
     }
 
+    /**
+     * Reads requests from other users.
+     */
     public void start() {
         Thread thread = new Thread() {
             @Override
@@ -61,13 +70,60 @@ public class TcpServer {
                     while (true) {
                         sockListener = serverSock.accept();
                         dataIn = new DataInputStream(sockListener.getInputStream());
-                         //TODO: OPEN A CONNECTION FOR EACH CLIENT
-
+                        dataOut = new DataOutputStream(sockListener.getOutputStream());
+                        String fileName = readFileRequestInfo();
+                        //TODO - search file from its name
+                        //TODO: get folder from configuration file
+                        String path = "C:/Users/PRenato/Documents/NetBeansProjects/f2share/shared/dmo.png";
+                        // thePath = URLEncoder.encode(thePath, "UTF-8"); 
+                        File file = new File(path);
+                        sendFileSize(file);
+                        sendFile(file);
                     }
                 } catch (Exception ex) {
+                    System.out.println("Error");
                 }
             }
         };
         thread.start();
+    }
+
+    public Socket currentServerSocket() {
+        return sockListener;
+    }
+
+    public int currentServerPort() {
+        return serverSock.getLocalPort();
+    }
+
+    public DataInputStream currentDataInputStream() {
+        return this.dataIn;
+    }
+
+    /**
+     * Sends the file size of a file to the destination ip address configured
+     *
+     * @param file the file to send its size
+     * @return true if file size sent
+     * @throws FileNotFoundException if file not found
+     * @throws IOException if failed to write
+     */
+    public boolean sendFileSize(File file) throws FileNotFoundException, IOException {
+        byte[] fileBytes = Files.readAllBytes(file.toPath());
+        dataOut.writeInt(fileBytes.length);
+        return true;
+    }
+
+    /**
+     * Sends a file to a waiting host.
+     *
+     * @param file the file to send
+     * @return true if file is sent
+     * @throws IOException if failed to write the file
+     */
+    public boolean sendFile(File file) throws IOException {
+        byte[] fileBytes = Files.readAllBytes(file.toPath());
+        dataOut.write(fileBytes);
+        return true;
     }
 }

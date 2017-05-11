@@ -3,6 +3,7 @@
  */
 package persistence;
 
+import domain.Configuration;
 import domain.DataFile;
 import util.CustomFileFilter;
 
@@ -23,8 +24,7 @@ public class DataFileRepository {
 
         List<DataFile> dataFiles = new ArrayList<>();
 
-        // FIXME get location from configuration file
-        String directory = "shared";
+        String directory = Configuration.getSharedFolderName();
         File folder = new File(directory);
         File[] listOfFiles = folder.listFiles(new CustomFileFilter());
 
