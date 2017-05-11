@@ -5,7 +5,9 @@
  */
 package presentation.swing;
 
+import application.CommunicationController;
 import application.StartConfiguration;
+import application.TcpServer;
 import connection.AnnounceTimerTask;
 import connection.UdpReceiverThread;
 import domain.DataFile;
@@ -26,6 +28,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.event.MouseInputListener;
 
 /**
  * Represents the main menu of the application.
@@ -47,6 +50,7 @@ public class F2ShareMenu extends JFrame implements Observer {
 
     private Set<RemoteFile> remoteFiles;
     private Set<DataFile> dataFiles;
+    private TcpServer server;
 
     public F2ShareMenu() {
         super("F2Share");
@@ -68,17 +72,19 @@ public class F2ShareMenu extends JFrame implements Observer {
         }
 
         createComponents();
-
+        server = new TcpServer();
+        server.start();
         UdpReceiverThread udpReceiverThread = new UdpReceiverThread(remoteFiles);
         udpReceiverThread.addObserver(this);
         udpReceiverThread.start();
 
         // FIXME get seconds from config
         int secondsToAnnounce = 30;
-        AnnounceTimerTask announceTimerTask = new AnnounceTimerTask(dataFiles);
+        AnnounceTimerTask announceTimerTask = new AnnounceTimerTask(dataFiles,server.currentServerPort());
         announceTimerTask.addObserver(this);
         java.util.Timer timer = new java.util.Timer();
         timer.schedule(announceTimerTask, 0, secondsToAnnounce * 1000);
+    
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(WIDTH, LENGTH));
@@ -118,8 +124,42 @@ public class F2ShareMenu extends JFrame implements Observer {
         listDownload = new JList(remoteFileListModel);
         listDownload.setCellRenderer(new RemoteFileListCellRenderer());
 
-        panelDownload.add(createPanelList(listDownload));
+        panelDownload.add(createPanelList(listDownload),BorderLayout.CENTER);
+        JButton button = new JButton("DOWNLOAD");
+        button.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent me) {
+                CommunicationController ctrl = new CommunicationController(((RemoteFile)listDownload.getSelectedValue()).getAddress(), server, ((RemoteFile)listDownload.getSelectedValue()).getTcpPort());
+                ctrl.sendFileRequest(((RemoteFile)listDownload.getSelectedValue()).getName());
+                try {
+                    ctrl.downloadDataFile("LOL.png",  "C:/Users/PRenato/Documents/NetBeansProjects/f2share/download/");
+                } catch (IOException ex) {
+                    Logger.getLogger(F2ShareMenu.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
 
+            @Override
+            public void mousePressed(MouseEvent me) {
+            
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent me) {
+               
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent me) {
+             
+            }
+
+            @Override
+            public void mouseExited(MouseEvent me) {
+              
+            }
+
+        });
+        panelDownload.add(button,BorderLayout.SOUTH);
         return panelDownload;
     }
 
@@ -225,8 +265,10 @@ public class F2ShareMenu extends JFrame implements Observer {
             public void actionPerformed(ActionEvent e) {
                 try {
                     configurations();
+
                 } catch (IOException ex) {
-                    Logger.getLogger(F2ShareMenu.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(F2ShareMenu.class
+                            .getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
@@ -258,10 +300,10 @@ public class F2ShareMenu extends JFrame implements Observer {
             public void actionPerformed(ActionEvent e) {
                 JOptionPane.showMessageDialog(F2ShareMenu.this,
                         "F2Share\n\n"
-                                + "1060503 - Pedro Fernandes\n"
-                                + "1140822 - Renato Oliveira\n"
-                                + "1151159 - Ivo Ferro\n"
-                                + "\nRCOMP - 2DD - 2016/2017\n",
+                        + "1060503 - Pedro Fernandes\n"
+                        + "1140822 - Renato Oliveira\n"
+                        + "1151159 - Ivo Ferro\n"
+                        + "\nRCOMP - 2DD - 2016/2017\n",
                         "About",
                         JOptionPane.INFORMATION_MESSAGE);
             }
