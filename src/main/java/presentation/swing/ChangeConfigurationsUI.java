@@ -30,19 +30,19 @@ public class ChangeConfigurationsUI extends JDialog {
 
     private JButton saveBtn;
     private JButton editBtn;
-
-    private static final int WIDTH = 450, LENGTH = 300;
-
-    private static final String UDP_PORT = "UDP Port Number/";
+    
+    private static final int WIDTH = 500, LENGTH = 300;
+    
+    private static final String UDP_PORT = "UDP Port Number: ";
     private static final String UDP_TIME = "UDP Time Annoucement: ";
     private static final String REFRESH_TIME = "Refresh Time Annoucement: ";
     private static final String SHARED_FOLDER = "Shared Folder: ";
     private static final String DOWNLOAD_FOLDER = "Download Folder: ";
-    private static final Dimension LABEL_SIZE = new JLabel(UDP_TIME).
-            getPreferredSize();
-
-    public ChangeConfigurationsUI(JFrame frame) throws IOException {
-
+    private static final Dimension LABEL_SIZE = new JLabel(REFRESH_TIME).
+                                                        getPreferredSize(); 
+    
+    public ChangeConfigurationsUI(JFrame frame) throws IOException{
+        
         super(frame, "Configurations", true);
 
         controller = new ChangeConfigurationController();
@@ -170,20 +170,14 @@ public class ChangeConfigurationsUI extends JDialog {
                                 "Error",
                                 JOptionPane.ERROR_MESSAGE);
                     }
-                } catch (IllegalStateException ex) {
+                }catch (IllegalStateException | NumberFormatException ex ){
                     JOptionPane.showMessageDialog(
-                            null,
-                            "Invalid data!",
-                            "Error",
-                            JOptionPane.ERROR_MESSAGE);
-                } catch (NumberFormatException ne) {
-                    JOptionPane.showMessageDialog(
-                            null,
-                            "Invalid data!",
-                            "Error",
-                            JOptionPane.ERROR_MESSAGE);
-                } catch (FileNotFoundException ex) {
-                    Logger.getLogger(ChangeConfigurationsUI.class.getName()).log(Level.SEVERE, null, ex);
+                                    null,
+                                    "Invalid data!",
+                                    "Error",
+                                    JOptionPane.ERROR_MESSAGE); 
+                } catch (FileNotFoundException exc) {
+                    Logger.getLogger(ChangeConfigurationsUI.class.getName()).log(Level.SEVERE, null, exc);
                     JOptionPane.showMessageDialog(
                             null,
                             "Problem with configuration file!",

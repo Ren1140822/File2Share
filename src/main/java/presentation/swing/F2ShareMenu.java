@@ -28,7 +28,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.event.MouseInputListener;
 
 /**
  * Represents the main menu of the application.
@@ -50,7 +49,7 @@ public class F2ShareMenu extends JFrame implements Observer {
 
     private Set<RemoteFile> remoteFiles;
     private Set<DataFile> dataFiles;
-    private TcpServer server;
+    private TcpServer server = new TcpServer();
 
     public F2ShareMenu() {
         super("F2Share");
@@ -72,7 +71,6 @@ public class F2ShareMenu extends JFrame implements Observer {
         }
 
         createComponents();
-        server = new TcpServer();
         server.start();
         UdpReceiverThread udpReceiverThread = new UdpReceiverThread(remoteFiles);
         udpReceiverThread.addObserver(this);
@@ -84,7 +82,6 @@ public class F2ShareMenu extends JFrame implements Observer {
         announceTimerTask.addObserver(this);
         java.util.Timer timer = new java.util.Timer();
         timer.schedule(announceTimerTask, 0, secondsToAnnounce * 1000);
-    
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(WIDTH, LENGTH));
@@ -124,8 +121,8 @@ public class F2ShareMenu extends JFrame implements Observer {
         listDownload = new JList(remoteFileListModel);
         listDownload.setCellRenderer(new RemoteFileListCellRenderer());
 
-        panelDownload.add(createPanelList(listDownload),BorderLayout.CENTER);
-        JButton button = new JButton("DOWNLOAD");
+        panelDownload.add(createPanelList(listDownload));
+           JButton button = new JButton("DOWNLOAD");
         button.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent me) {
@@ -265,10 +262,8 @@ public class F2ShareMenu extends JFrame implements Observer {
             public void actionPerformed(ActionEvent e) {
                 try {
                     configurations();
-
                 } catch (IOException ex) {
-                    Logger.getLogger(F2ShareMenu.class
-                            .getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(F2ShareMenu.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
@@ -300,10 +295,10 @@ public class F2ShareMenu extends JFrame implements Observer {
             public void actionPerformed(ActionEvent e) {
                 JOptionPane.showMessageDialog(F2ShareMenu.this,
                         "F2Share\n\n"
-                        + "1060503 - Pedro Fernandes\n"
-                        + "1140822 - Renato Oliveira\n"
-                        + "1151159 - Ivo Ferro\n"
-                        + "\nRCOMP - 2DD - 2016/2017\n",
+                                + "1060503 - Pedro Fernandes\n"
+                                + "1140822 - Renato Oliveira\n"
+                                + "1151159 - Ivo Ferro\n"
+                                + "\nRCOMP - 2DD - 2016/2017\n",
                         "About",
                         JOptionPane.INFORMATION_MESSAGE);
             }
@@ -330,6 +325,13 @@ public class F2ShareMenu extends JFrame implements Observer {
 
     @Override
     public void update(Observable observable, Object o) {
+
+        if (observable instanceof RemoteFile) {
+            RemoteFile remoteFile = (RemoteFile) observable;
+            remoteFiles.remove(remoteFile);
+            remoteFile.cancelTimer();
+        }
+
         DataFileListModel dataFileListModel = new DataFileListModel(dataFiles);
         listShared.setModel(dataFileListModel);
         RemoteFileListModel remoteFileListModel = new RemoteFileListModel(remoteFiles);

@@ -4,6 +4,7 @@
 package persistence;
 
 import domain.DataFile;
+import util.CustomFileFilter;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,15 +26,13 @@ public class DataFileRepository {
         // FIXME get location from configuration file
         String directory = "shared";
         File folder = new File(directory);
-        File[] listOfFiles = folder.listFiles();
+        File[] listOfFiles = folder.listFiles(new CustomFileFilter());
 
         for (File file : listOfFiles) {
-            if (file.isFile()) {
                 String fileName = file.getName();
                 byte[] data = Files.readAllBytes(file.toPath());
                 // FIXME if the file has an extension to be ignored, ignore it
                 dataFiles.add(new DataFile(fileName, data));
-            }
         }
 
         return dataFiles;

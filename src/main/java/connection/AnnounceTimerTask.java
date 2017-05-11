@@ -36,6 +36,7 @@ public class AnnounceTimerTask extends TimerTask {
         AnnounceService announceService = new AnnounceService();
         
         try {
+            this.dataFiles.clear();
             this.dataFiles.addAll(announceService.sendFilesNames(this.tcpPort));
             observable.activateChanges();
             observable.notifyObservers();
