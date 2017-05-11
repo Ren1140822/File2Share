@@ -7,17 +7,13 @@ package application;
 
 import domain.Configuration;
 import domain.ConfigurationBuilder;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 
 /**
- *
  * Starts the configurations of the application when system is booting.
  */
 public final class StartConfiguration {
@@ -32,7 +28,7 @@ public final class StartConfiguration {
         this.filename = DEFAULT_FILENAME;
         this.configuration = readConfigurationFile();
     }
-    
+
     /**
      * @param fileName
      * @return
@@ -43,10 +39,10 @@ public final class StartConfiguration {
         this.builder = new ConfigurationBuilder();
 
         List<String> rows = readLines(DEFAULT_FILENAME);
-        if(rows == null){
+        if (rows == null) {
             return configuration = new Configuration();
         }
-        
+
         Integer udpPort = Integer.parseInt(rows.get(0));
         Integer udpTime = Integer.parseInt(rows.get(1));
         Integer refreshTime = Integer.parseInt(rows.get(2));
@@ -87,14 +83,14 @@ public final class StartConfiguration {
 
     private void createConfigurationFile() throws FileNotFoundException {
 
-            File createFile = new File(DEFAULT_FILENAME);
-            Formatter fileFormatter = new Formatter(createFile);
+        File createFile = new File(DEFAULT_FILENAME);
+        Formatter fileFormatter = new Formatter(createFile);
 
-            configuration = new Configuration();
+        configuration = new Configuration();
 
-            fileFormatter.format("%s", configuration.toString());
+        fileFormatter.format("%s", configuration.toString());
 
-            fileFormatter.close();
+        fileFormatter.close();
 
     }
 

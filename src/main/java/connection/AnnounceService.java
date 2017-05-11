@@ -21,7 +21,7 @@ public class AnnounceService {
      *
      * @throws IOException input/output exception
      */
-    public void sendFilesNames() throws IOException {
+    public List<DataFile> sendFilesNames() throws IOException {
 
         List<DataFile> filesToAnnounce = DataFileRepository.getSharedFiles();
 
@@ -36,10 +36,10 @@ public class AnnounceService {
         byte fileNameSize;
 
         // FIXME get udp port from configuration
-        int udpPort = 9999;
+        int udpPort = 32034;
 
         // FIXME get dynamic tcp port
-        int tcpPort = 9999;
+        int tcpPort = 8888;
         byte tcpPortByte[] = ByteBuffer.allocate(4).putInt(tcpPort).array();
         Bytes.insertArrayIntoArray(data, 0, tcpPortByte);
 
@@ -74,5 +74,7 @@ public class AnnounceService {
 
         data[4] = countFiles;
         UdpConnection.sendBroadcast(data, udpPort);
+
+        return filesToAnnounce;
     }
 }

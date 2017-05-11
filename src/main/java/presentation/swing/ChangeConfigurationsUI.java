@@ -6,43 +6,28 @@
 package presentation.swing;
 
 import application.ChangeConfigurationController;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
 
 /**
- *
  * @author Pedro Fernandes
  */
-public class ChangeConfigurationsUI extends JDialog{
-    
+public class ChangeConfigurationsUI extends JDialog {
+
     private ChangeConfigurationController controller;
-    
+
     private JTextField txtUDPPort;
     private JTextField txtUDPTime;
     private JTextField txtRefreshFile;
     private JTextField txtShared;
     private JTextField txtDownload;
-    
+
     private JButton saveBtn;
     private JButton editBtn;
     
@@ -59,11 +44,11 @@ public class ChangeConfigurationsUI extends JDialog{
     public ChangeConfigurationsUI(JFrame frame) throws IOException{
         
         super(frame, "Configurations", true);
-        
+
         controller = new ChangeConfigurationController();
-        
-        add(createComponents()); 
-        
+
+        add(createComponents());
+
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -73,46 +58,46 @@ public class ChangeConfigurationsUI extends JDialog{
         pack();
         setResizable(true);
         setMinimumSize(new Dimension(WIDTH, LENGTH));
-        setLocationRelativeTo(null);        
+        setLocationRelativeTo(null);
         setVisible(true);
-        
+
     }
-    
-    private JPanel createComponents(){
+
+    private JPanel createComponents() {
         JPanel panel = new JPanel(new BorderLayout());
-                
+
         panel.add(createPanelImage(), BorderLayout.WEST);
         panel.add(createGeneralPanel(), BorderLayout.CENTER);
         panel.add(createPanelButons(), BorderLayout.SOUTH);
-        
+
         return panel;
     }
-    
-    private JPanel createGeneralPanel(){
-        
-        JPanel p = new JPanel(new GridLayout(5,1));
-        
+
+    private JPanel createGeneralPanel() {
+
+        JPanel p = new JPanel(new GridLayout(5, 1));
+
         p.setBorder(BorderFactory.createTitledBorder("Configurations:"));
-        
+
         int aux = 10;
-        
+
         txtUDPPort = new JTextField(aux);
         txtUDPPort.requestFocusInWindow();
         txtUDPPort.setText("" + controller.currentUDPPortNumber());
         txtUDPPort.setEditable(false);
-        
+
         txtUDPTime = new JTextField(aux);
         txtUDPTime.setText("" + controller.currentUDPTimeAnnoucement());
         txtUDPTime.setEditable(false);
-        
+
         txtRefreshFile = new JTextField(aux);
         txtRefreshFile.setText("" + controller.currentRefreshFileTime());
         txtRefreshFile.setEditable(false);
-        
+
         txtShared = new JTextField(aux);
         txtShared.setText(controller.currentSharedFolderName());
         txtShared.setEditable(false);
-        
+
         txtDownload = new JTextField(aux);
         txtDownload.setText(controller.currentDownloadFolderName());
         txtDownload.setEditable(false);
@@ -122,14 +107,14 @@ public class ChangeConfigurationsUI extends JDialog{
         p.add(createPanelLabelTextLabel(REFRESH_TIME, txtRefreshFile));
         p.add(createPanelLabelTextLabel(SHARED_FOLDER, txtShared));
         p.add(createPanelLabelTextLabel(DOWNLOAD_FOLDER, txtDownload));
-        
+
         return p;
     }
-    
+
     private JPanel createPanelLabelTextLabel(String label1, JTextField text) {
         JLabel lb1 = new JLabel(label1, JLabel.RIGHT);
         lb1.setPreferredSize(LABEL_SIZE);
-        
+
         JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
         p.add(lb1);
@@ -137,30 +122,30 @@ public class ChangeConfigurationsUI extends JDialog{
 
         return p;
     }
-    
-    private JPanel createPanelButons(){
-        
+
+    private JPanel createPanelButons() {
+
         FlowLayout l = new FlowLayout();
 
         l.setHgap(20);
         l.setVgap(20);
 
         JPanel p = new JPanel(l);
-        
+
         p.setBorder(BorderFactory.createTitledBorder("Options:"));
-        
+
         JButton bt1 = createButonSave();
         JButton bt2 = createButonEdit();
-        
+
         getRootPane().setDefaultButton(bt1);
-        
+
         p.add(bt1);
         p.add(bt2);
-        
+
         return p;
     }
-    
-    private JButton createButonSave(){
+
+    private JButton createButonSave() {
         saveBtn = new JButton("Save");
         saveBtn.setMnemonic(KeyEvent.VK_S);
         saveBtn.setToolTipText("Save new configurations");
@@ -168,22 +153,22 @@ public class ChangeConfigurationsUI extends JDialog{
         saveBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try{
+                try {
                     Integer UDPPortNumber = Integer.parseInt(txtUDPPort.getText());
                     Integer UDPTimeAnnouncement = Integer.parseInt(txtUDPTime.getText());
                     Integer refreshFileTime = Integer.parseInt(txtRefreshFile.getText());
                     String sharedFolderName = txtShared.getText();
-                    String downloadFolderName = txtDownload.getText();                    
-                    
-                    if(controller.saveConfigurations(UDPPortNumber, UDPTimeAnnouncement,
-                        refreshFileTime, sharedFolderName, downloadFolderName)){
+                    String downloadFolderName = txtDownload.getText();
+
+                    if (controller.saveConfigurations(UDPPortNumber, UDPTimeAnnouncement,
+                            refreshFileTime, sharedFolderName, downloadFolderName)) {
                         finish();
-                    }else{
+                    } else {
                         JOptionPane.showMessageDialog(
-                                    null,
-                                    "It was not possible change configurations!\n",
-                                    "Error",
-                                    JOptionPane.ERROR_MESSAGE); 
+                                null,
+                                "It was not possible change configurations!\n",
+                                "Error",
+                                JOptionPane.ERROR_MESSAGE);
                     }
                 }catch (IllegalStateException | NumberFormatException ex ){
                     JOptionPane.showMessageDialog(
@@ -194,18 +179,18 @@ public class ChangeConfigurationsUI extends JDialog{
                 } catch (FileNotFoundException exc) {
                     Logger.getLogger(ChangeConfigurationsUI.class.getName()).log(Level.SEVERE, null, exc);
                     JOptionPane.showMessageDialog(
-                                    null,
-                                    "Problem with configuration file!",
-                                    "Error",
-                                    JOptionPane.ERROR_MESSAGE); 
-                }       
+                            null,
+                            "Problem with configuration file!",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
         return saveBtn;
-        
+
     }
-    
-    private JButton createButonEdit(){
+
+    private JButton createButonEdit() {
         editBtn = new JButton("Edit");
         editBtn.setMnemonic(KeyEvent.VK_S);
         editBtn.setToolTipText("Edit configurations");
@@ -213,20 +198,20 @@ public class ChangeConfigurationsUI extends JDialog{
             @Override
             public void actionPerformed(ActionEvent e) {
                 txtUDPPort.setEditable(true);
-                txtUDPTime.setEditable(true);        
-                txtRefreshFile.setEditable(true);        
-                txtShared.setEditable(true);        
+                txtUDPTime.setEditable(true);
+                txtRefreshFile.setEditable(true);
+                txtShared.setEditable(true);
                 txtDownload.setEditable(true);
-                saveBtn.setEnabled(true);    
+                saveBtn.setEnabled(true);
             }
         });
         return editBtn;
-        
+
     }
-    
+
     private JPanel createPanelImage() {
         ImageIcon background = new ImageIcon("src/main/resources/config.png");
-        
+
         JLabel label = new JLabel();
         label.setIcon(background);
 
@@ -235,14 +220,14 @@ public class ChangeConfigurationsUI extends JDialog{
 
         return panel;
     }
-    
+
     private void finish() {
         JOptionPane.showMessageDialog(
-                                    null,
-                                    "Configurations changed successfully!",
-                                    "Configurations",
-                                    JOptionPane.INFORMATION_MESSAGE);
+                null,
+                "Configurations changed successfully!",
+                "Configurations",
+                JOptionPane.INFORMATION_MESSAGE);
         dispose();
     }
-    
+
 }

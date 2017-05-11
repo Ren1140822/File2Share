@@ -8,7 +8,7 @@ import util.Strings;
 /**
  * Represent a data file name.
  */
-public final class DataFileName {
+public final class DataFileName implements Comparable<DataFileName> {
 
     /**
      * The name of the file.
@@ -21,11 +21,23 @@ public final class DataFileName {
      * @param name name of the file
      */
     public DataFileName(String name) {
-        if (!Strings.isNullOrEmptyOrWhiteSpace(name)) {
+        if (Strings.isNullOrEmptyOrWhiteSpace(name)) {
             throw new IllegalStateException();
         }
 
         this.name = name;
+    }
+
+    public byte length() {
+        return (byte) this.name.length();
+    }
+
+    public byte[] nameBytes() {
+        return this.name.getBytes();
+    }
+
+    public String name() {
+        return this.name;
     }
 
     @Override
@@ -42,11 +54,8 @@ public final class DataFileName {
         return this.name.equals(otherName.name);
     }
 
-    public byte length() {
-        return (byte) this.name.length();
-    }
-
-    public byte[] nameBytes() {
-        return this.name.getBytes();
+    @Override
+    public int compareTo(DataFileName dataFileName) {
+        return this.name.compareTo(dataFileName.name);
     }
 }
