@@ -1,5 +1,6 @@
 package util;
 
+import domain.Configuration;
 import java.io.File;
 import java.io.FileFilter;
 
@@ -13,12 +14,11 @@ public class CustomFileFilter implements FileFilter {
     @Override
     public boolean accept(File file) {
 
-        // FIXME get this properties from configuration file
         boolean ignoreFolders = true;
         boolean ignoreFilesWithoutExtension = true;
-        String[] ignoreFiles = {"sys", "etc", "bootmgr.efi"};
-        String[] ignoreFilesStartingWith = {".", "_", "~"};
-        String[] ignoreFilesWithExtension = {"store", "db"};
+        String[] ignoreFiles = Configuration.getIgnoreFiles();
+        String[] ignoreFilesStartingWith =  Configuration.getIgnoreFilesStartingWith();
+        String[] ignoreFilesWithExtension =  Configuration.getIgnoreFilesWithExtension();
 
         String fileName = file.getName();
 

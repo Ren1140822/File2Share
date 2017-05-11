@@ -3,6 +3,7 @@
  */
 package connection;
 
+import domain.Configuration;
 import domain.RemoteFile;
 import framework.BaseObservable;
 
@@ -43,8 +44,7 @@ public class UdpReceiverThread extends Thread {
     public void run() {
 
         try {
-            // FIXME get udp port from configuration
-            int port = 32034;
+            int port = Configuration.getUDPPortNumber();
 
             byte[] data = new byte[UdpConnection.MAXIMUM_BYTES_PAYLOAD];
             DatagramSocket sock = null;

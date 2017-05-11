@@ -3,6 +3,7 @@
  */
 package domain;
 
+import java.util.Arrays;
 import util.Strings;
 
 /**
@@ -10,12 +11,14 @@ import util.Strings;
  */
 public class Configuration {
 
-    private Integer UDPPortNumber;
-    private Integer UDPTimeAnnouncement;
-    private Integer refreshFileTime;
-    private String sharedFolderName;
-    private String downloadFolderName;
-
+    private static Integer UDPPortNumber;
+    private static Integer UDPTimeAnnouncement;
+    private static Integer refreshFileTime;
+    private static String sharedFolderName;
+    private static String downloadFolderName;
+    private static String[] ignoreFiles;
+    private static String[] ignoreFilesStartingWith;
+    private static String[] ignoreFilesWithExtension;
 
     private static final Integer DEFAULT_UDP_PORT_NUMBER = 32034;
     private static final Integer DEFAULT_UDP_TIME_ANNOUCEMENT = 30; // seconds
@@ -23,16 +26,22 @@ public class Configuration {
     private static final String DEFAULT_FOLDER_PREFIX = "/";
     private static final String DEFAULT_SHARED_FOLDER_NAME = DEFAULT_FOLDER_PREFIX + "shared";
     private static final String DEFAULT_DOWNLOAD_FOLDER_NAME = DEFAULT_FOLDER_PREFIX + "download";
-
+    private static final String[] DEFAULT_IGNORE_FILES = {"sys", "etc", "bootmgr.efi"};
+    private static final String[] DEFAULT_IGNORE_FILES_STARTING_WITH = {".", "_", "~"};
+    private static final String[] DEFAULT_IGNORE_FILES_WITH_EXTENSION = {"store", "db"};
+    
     /**
      * Constructor by default
      */
     public Configuration() {
-        this.UDPPortNumber = DEFAULT_UDP_PORT_NUMBER;
-        this.UDPTimeAnnouncement = DEFAULT_UDP_TIME_ANNOUCEMENT;
-        this.refreshFileTime = DEFAULT_REFRESH_FILE_TIME;
-        this.sharedFolderName = DEFAULT_SHARED_FOLDER_NAME;
-        this.downloadFolderName = DEFAULT_DOWNLOAD_FOLDER_NAME;
+        Configuration.UDPPortNumber = DEFAULT_UDP_PORT_NUMBER;
+        Configuration.UDPTimeAnnouncement = DEFAULT_UDP_TIME_ANNOUCEMENT;
+        Configuration.refreshFileTime = DEFAULT_REFRESH_FILE_TIME;
+        Configuration.sharedFolderName = DEFAULT_SHARED_FOLDER_NAME;
+        Configuration.downloadFolderName = DEFAULT_DOWNLOAD_FOLDER_NAME;
+        Configuration.ignoreFiles = DEFAULT_IGNORE_FILES;
+        Configuration.ignoreFilesStartingWith = DEFAULT_IGNORE_FILES_STARTING_WITH;
+        Configuration.ignoreFilesWithExtension = DEFAULT_IGNORE_FILES_WITH_EXTENSION;
     }
 
     public Configuration(Integer UDPPortNumber, Integer UDPTimeAnnouncement,
@@ -50,12 +59,14 @@ public class Configuration {
             throw new IllegalStateException();
         }
 
-        this.UDPPortNumber = UDPPortNumber;
-        this.UDPTimeAnnouncement = UDPTimeAnnouncement;
-        this.refreshFileTime = refreshFileTime;
-        this.sharedFolderName = DEFAULT_FOLDER_PREFIX + sharedFolderName;
-        this.downloadFolderName = DEFAULT_FOLDER_PREFIX + downloadFolderName;
-
+        Configuration.UDPPortNumber = UDPPortNumber;
+        Configuration.UDPTimeAnnouncement = UDPTimeAnnouncement;
+        Configuration.refreshFileTime = refreshFileTime;
+        Configuration.sharedFolderName = DEFAULT_FOLDER_PREFIX + sharedFolderName;
+        Configuration.downloadFolderName = DEFAULT_FOLDER_PREFIX + downloadFolderName;
+        Configuration.ignoreFiles = DEFAULT_IGNORE_FILES;
+        Configuration.ignoreFilesStartingWith = DEFAULT_IGNORE_FILES_STARTING_WITH;
+        Configuration.ignoreFilesWithExtension = DEFAULT_IGNORE_FILES_WITH_EXTENSION;
     }
 
     /**
@@ -98,46 +109,70 @@ public class Configuration {
 
     @Override
     public String toString() {
-        return "udp_port_number: " + this.getUDPPortNumber() +
-                "\nudp_time_announcement: " + this.getUDPTimeAnnouncement() +
-                "\nrefresh_file_time: " + this.getRefreshFileTime() +
-                "\nshared_folder: " + this.getSharedFolderName() +
-                "\ndownload_folder: " + this.getDownloadFolderName();
+        return "udp_port_number: " + getUDPPortNumber() +
+                "\nudp_time_announcement: " + getUDPTimeAnnouncement() +
+                "\nrefresh_file_time: " + getRefreshFileTime() +
+                "\nshared_folder: " + getSharedFolderName() +
+                "\ndownload_folder: " + getDownloadFolderName() +
+                "\nignore_files: " + Arrays.toString(getIgnoreFiles()) + 
+                "\nignore_files_starting_with: " + Arrays.toString(getIgnoreFilesStartingWith()) +
+                "\nignore_files_with_extension: " + Arrays.toString(getIgnoreFilesWithExtension());
     }
 
     /**
      * @return the UDPPortNumber
      */
-    public Integer getUDPPortNumber() {
+    public static Integer getUDPPortNumber() {
         return UDPPortNumber;
     }
 
     /**
      * @return the UDPTimeAnnouncement
      */
-    public Integer getUDPTimeAnnouncement() {
+    public static Integer getUDPTimeAnnouncement() {
         return UDPTimeAnnouncement;
     }
 
     /**
      * @return the refreshFileTime
      */
-    public Integer getRefreshFileTime() {
+    public static Integer getRefreshFileTime() {
         return refreshFileTime;
     }
 
     /**
      * @return the sharedFolderName
      */
-    public String getSharedFolderName() {
+    public static String getSharedFolderName() {
         return sharedFolderName;
     }
 
     /**
      * @return the downloadFolderName
      */
-    public String getDownloadFolderName() {
+    public static String getDownloadFolderName() {
         return downloadFolderName;
+    }
+    
+    /**
+     * @return the files to be ignored
+     */
+    public static String[] getIgnoreFiles() {
+        return ignoreFiles;
+    }
+    
+    /**
+     * @return the files starting with (e.g. "_") to be ignored
+     */
+    public static String[] getIgnoreFilesStartingWith() {
+        return ignoreFilesStartingWith;
+    }
+    
+    /**
+     * @return the files starting extension (e.g. "sys") to be ignored
+     */
+    public static String[] getIgnoreFilesWithExtension() {
+        return ignoreFilesWithExtension;
     }
 
 }

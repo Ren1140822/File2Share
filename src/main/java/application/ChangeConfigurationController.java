@@ -18,7 +18,7 @@ import java.util.Formatter;
  */
 public class ChangeConfigurationController {
 
-    private Configuration configuration;
+    private final Configuration configuration;
 
     private static final String DEFAULT_FILENAME = "Config.txt";
 
@@ -28,23 +28,23 @@ public class ChangeConfigurationController {
     }
 
     public Integer currentUDPPortNumber() {
-        return this.configuration.getUDPPortNumber();
+        return Configuration.getUDPPortNumber();
     }
 
     public Integer currentUDPTimeAnnoucement() {
-        return this.configuration.getUDPTimeAnnouncement();
+        return Configuration.getUDPTimeAnnouncement();
     }
 
     public Integer currentRefreshFileTime() {
-        return this.configuration.getRefreshFileTime();
+        return Configuration.getRefreshFileTime();
     }
 
     public String currentDownloadFolderName() {
-        return this.configuration.getDownloadFolderName().replace("/", "");
+        return Configuration.getDownloadFolderName().replace("/", "");
     }
 
     public String currentSharedFolderName() {
-        return this.configuration.getSharedFolderName().replace("/", "");
+        return Configuration.getSharedFolderName().replace("/", "");
     }
 
     public boolean saveConfigurations(Integer udpPort, Integer udpTime,

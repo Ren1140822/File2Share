@@ -18,7 +18,7 @@ import java.util.List;
  */
 public final class StartConfiguration {
 
-    private String filename;
+    private final String filename;
     private Configuration configuration;
     private ConfigurationBuilder builder;
 
@@ -30,7 +30,6 @@ public final class StartConfiguration {
     }
 
     /**
-     * @param fileName
      * @return
      * @throws java.io.IOException
      */
@@ -60,7 +59,7 @@ public final class StartConfiguration {
     private List<String> readLines(String fileName) throws FileNotFoundException, IOException {
         try {
             File file = new File(fileName);
-            List<String> rows = new ArrayList<String>();
+            List<String> rows = new ArrayList<>();
             BufferedReader read = new BufferedReader(new FileReader(file));
 
             String row;
@@ -84,13 +83,11 @@ public final class StartConfiguration {
     private void createConfigurationFile() throws FileNotFoundException {
 
         File createFile = new File(DEFAULT_FILENAME);
-        Formatter fileFormatter = new Formatter(createFile);
-
-        configuration = new Configuration();
-
-        fileFormatter.format("%s", configuration.toString());
-
-        fileFormatter.close();
+        try (Formatter fileFormatter = new Formatter(createFile)) {
+            configuration = new Configuration();
+            
+            fileFormatter.format("%s", configuration.toString());
+        }
 
     }
 

@@ -3,6 +3,7 @@
  */
 package connection;
 
+import domain.Configuration;
 import domain.DataFile;
 import persistence.DataFileRepository;
 import util.Bytes;
@@ -35,8 +36,7 @@ public class AnnounceService {
         byte pos_index = startingPosition;
         byte fileNameSize;
 
-        // FIXME get udp port from configuration
-        int udpPort = 32034;
+        int udpPort = Configuration.getUDPPortNumber();
 
         // FIXME get dynamic tcp port
         int tcpPort = 8888;
