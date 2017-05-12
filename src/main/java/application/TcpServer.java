@@ -73,6 +73,7 @@ public class TcpServer {
                         sockListener = serverSock.accept();
                         dataIn = new DataInputStream(sockListener.getInputStream());
                         dataOut = new DataOutputStream(sockListener.getOutputStream());
+                         
                         String fileName = readFileRequestInfo();
                         File file = findFile(fileName);
                         if (file != null) {
