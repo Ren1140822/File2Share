@@ -19,12 +19,16 @@ import java.util.Formatter;
 public class ChangeConfigurationController {
 
     private final Configuration configuration;
+    private String sharedFolder;
+    private String downloadFolder;
 
     private static final String DEFAULT_FILENAME = "Config.txt";
 
     public ChangeConfigurationController() throws IOException {
         final StartConfiguration s = new StartConfiguration();
         this.configuration = s.readConfigurationFile();
+        this.sharedFolder = Configuration.getSharedFolderName();
+        this.downloadFolder = Configuration.getDownloadFolderName();
     }
 
     public Integer currentUDPPortNumber() {
@@ -48,12 +52,20 @@ public class ChangeConfigurationController {
     }
 
     public boolean saveConfigurations(Integer udpPort, Integer udpTime,
-                                      Integer refreshTime, String sharedName, String downloadName) throws FileNotFoundException {
+          Integer refreshTime,
+          boolean ignoreFolders, boolean ignoreFilesWithoutExtension,
+          String[] ignoreFiles, String[] ignoreFilesStartingWith,
+          String[] ignoreFilesWithExtension) throws FileNotFoundException {
+        
         final ConfigurationBuilder builder = new ConfigurationBuilder();
 
         builder.withUDPPort(udpPort).withUDPTimeAnnouncement(udpTime)
-                .withRefreshFileTime(refreshTime).withSharedFolderName(sharedName)
-                .withDownloadFolderName(downloadName);
+                .withRefreshFileTime(refreshTime).withSharedFolderName(sharedFolder)
+                .withDownloadFolderName(downloadFolder).withIgnoreFolders(ignoreFolders)
+                .withIgnoreFilesWithoutExtension(ignoreFilesWithoutExtension)
+                .withIgnoreFiles(ignoreFiles)
+                .withIgnoreFilesStartingWith(ignoreFilesStartingWith)
+                .withIgnoreFilesWithExtension(ignoreFilesWithExtension);
 
         final Configuration changedConfiguration = builder.buildConfiguration();
 
@@ -75,6 +87,14 @@ public class ChangeConfigurationController {
 
         fileFormatter.close();
 
+    }
+    
+    public String changeSharedFolder(String folder){
+        return this.sharedFolder = folder;
+    }
+    
+    public String changeDownloadFolder(String folder){
+        return this.downloadFolder = folder;
     }
 
 }

@@ -92,9 +92,8 @@ public class Configuration {
      * @return true if all strings are valid, false if not
      */
     private boolean validateAllStrings(String sharedFolderName, String downloadFolderName) {
-        boolean aux1 = !Strings.isNullOrEmptyOrWhiteSpace(sharedFolderName) && !sharedFolderName.contains(" ");
-        boolean aux2 = !Strings.isNullOrEmptyOrWhiteSpace(downloadFolderName) && !downloadFolderName.contains(" ");
-        return aux1 && aux2;
+        return !Strings.isNullOrEmptyOrWhiteSpace(sharedFolderName) 
+                && !Strings.isNullOrEmptyOrWhiteSpace(downloadFolderName);
     }
 
     /**

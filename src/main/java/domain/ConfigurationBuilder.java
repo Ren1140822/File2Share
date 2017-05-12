@@ -52,7 +52,7 @@ public class ConfigurationBuilder {
 
     public ConfigurationBuilder withSharedFolderName(String sharedFolderName) {
         this.sharedFolderName = sharedFolderName;
-        if ((Strings.isNullOrEmptyOrWhiteSpace(sharedFolderName)) || (sharedFolderName.contains(" "))) {
+        if (Strings.isNullOrEmptyOrWhiteSpace(sharedFolderName)) {
             throw new IllegalStateException("Invalid Shared Folder name!");
         }
         return this;
@@ -60,7 +60,7 @@ public class ConfigurationBuilder {
 
     public ConfigurationBuilder withDownloadFolderName(String downloadFolderName) {
         this.downloadFolderName = downloadFolderName;
-        if ((Strings.isNullOrEmptyOrWhiteSpace(downloadFolderName)) || (downloadFolderName.contains(" "))) {
+        if (Strings.isNullOrEmptyOrWhiteSpace(downloadFolderName)) {
             throw new IllegalStateException("Invalid Download Folder name!");
         }
         return this;
