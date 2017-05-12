@@ -29,7 +29,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.event.MouseInputListener;
 
 /**
  * Represents the main menu of the application.
@@ -66,14 +65,17 @@ public class F2ShareMenu extends JFrame implements Observer {
         // TODO fill remoteFiles and dataFiles
         remoteFiles = new TreeSet<>();
 
-        // TODO DataFileRepository.getSharedFiles() => ERROR
-        /**
-         * try { dataFiles = new TreeSet(DataFileRepository.getSharedFiles()); }
-         * catch (IOException e) { JOptionPane.showMessageDialog(this, "There
-         * was an error reading local files"); e.printStackTrace(); }
-        *
-         */
-        dataFiles = new TreeSet<>();
+        // TODO DataFileRepository.getSharedFiles() => ERROR  nullpointer
+        
+        try { 
+            dataFiles = new TreeSet(DataFileRepository.getSharedFiles()); }
+        catch (IOException e) { 
+            JOptionPane.showMessageDialog(this, 
+                    "There was an error reading local files"); 
+            e.printStackTrace();
+        }
+        
+        
 
         createComponents();
 
@@ -83,9 +85,6 @@ public class F2ShareMenu extends JFrame implements Observer {
         UdpReceiverThread udpReceiverThread = new UdpReceiverThread(remoteFiles);
         udpReceiverThread.addObserver(this);
         udpReceiverThread.start();
-
-        // FIXME get tcp port dynamically
-        int tcpPort = 8888;
 
         int secondsToAnnounce = Configuration.getUDPTimeAnnouncement();
         AnnounceTimerTask announceTimerTask = new AnnounceTimerTask(dataFiles, server.currentServerPort());

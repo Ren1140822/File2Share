@@ -1,7 +1,7 @@
 udp_port_number: 32034
 udp_time_announcement: 30
 refresh_file_time: 45
-shared_folder: shared
+shared_folder: C:\Users\Pedro Fernandes\Documents\NetBeansProjects\2Ano2Semestre\RCOMP\f2share\shared
 download_folder: download
 get_ignore_folders: true
 ignore_files_without_extension: true
