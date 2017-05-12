@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -357,10 +358,13 @@ public class ChangeConfigurationsUI extends JDialog {
                         ignoreFilesWithoutExtension = false;
                     }
                     
+                    String[] aux1 =  Arrays.asList(ignoreFiles.toArray()).toArray(new String[ignoreFiles.toArray().length]);
+                    String[] aux2 =  Arrays.asList(ignoreFilesStartingWith.toArray()).toArray(new String[ignoreFilesStartingWith.toArray().length]);
+                    String[] aux3 =  Arrays.asList(ignoreFilesWithExtension.toArray()).toArray(new String[ignoreFilesWithExtension.toArray().length]);
+                    
                     if (controller.saveConfigurations(UDPPortNumber, UDPTimeAnnouncement,
                             refreshFileTime, ignoreFolders, ignoreFilesWithoutExtension,
-                            Configuration.getIgnoreFiles(), Configuration.getIgnoreFilesStartingWith(),
-                            Configuration.getIgnoreFilesWithExtension())) {
+                            aux1, aux2, aux3)) {
                         finish();
                     } else {
                         JOptionPane.showMessageDialog(
@@ -456,13 +460,13 @@ public class ChangeConfigurationsUI extends JDialog {
         
        p.add(createPanelLists( IGNORE_FILES_STARTING_WITH,
                                 lstIgnoreFilesStartingWith,
-                                addIgnoreFiles,
-                                rmIgnoreFiles));
+                                createButtonAddIgnoreFilesStartingWith(),
+                                createButtonRemoveIgnoreFilesStartingWith()));
        
        p.add(createPanelLists( IGNORE_FILES_WITH_EXTENSION,
                                 lstIgnoreFilesWithExtension,
-                                addIgnoreFiles,
-                                rmIgnoreFiles));
+                                createButtonAddIgnoreFilesWithExtension(),
+                                createButtonRemoveIgnoreFilesWithExtension()));
         return p;
     }
     
@@ -511,14 +515,48 @@ public class ChangeConfigurationsUI extends JDialog {
         addIgnoreFiles = new JButton("Add");
         addIgnoreFiles.setMnemonic(KeyEvent.VK_I);
         addIgnoreFiles.setToolTipText("Add ignore files");
+        addIgnoreFiles.setEnabled(false);
         addIgnoreFiles.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new DialogNewString(ChangeConfigurationsUI.this, IGNORE_FILES, lstIgnoreFiles);
+                new DialogNewString(ChangeConfigurationsUI.this, IGNORE_FILES, ignoreFiles);
+                lstIgnoreFiles.setListData(ignoreFiles.toArray());
             }
         });
 
         return addIgnoreFiles;
+    }
+    
+    private JButton createButtonAddIgnoreFilesStartingWith(){
+        addIgnoreFilesStartingWith = new JButton("Add");
+        addIgnoreFilesStartingWith.setMnemonic(KeyEvent.VK_I);
+        addIgnoreFilesStartingWith.setToolTipText("Add ignore files Starting With");
+        addIgnoreFilesStartingWith.setEnabled(false);
+        addIgnoreFilesStartingWith.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new DialogNewString(ChangeConfigurationsUI.this, IGNORE_FILES_STARTING_WITH, ignoreFilesStartingWith);
+                lstIgnoreFilesStartingWith.setListData(ignoreFilesStartingWith.toArray());
+            }
+        });
+
+        return addIgnoreFilesStartingWith;
+    }
+    
+    private JButton createButtonAddIgnoreFilesWithExtension(){
+        addIgnoreFilesWithExtension = new JButton("Add");
+        addIgnoreFilesWithExtension.setMnemonic(KeyEvent.VK_I);
+        addIgnoreFilesWithExtension.setToolTipText("Add ignore files With Extension");
+        addIgnoreFilesWithExtension.setEnabled(false);
+        addIgnoreFilesWithExtension.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new DialogNewString(ChangeConfigurationsUI.this, IGNORE_FILES_WITH_EXTENSION, ignoreFilesWithExtension);
+                lstIgnoreFilesWithExtension.setListData(ignoreFilesWithExtension.toArray());
+            }
+        });
+
+        return addIgnoreFilesWithExtension;
     }
     
     private JButton createButtonRemoveIgnoreFiles(){
@@ -529,10 +567,10 @@ public class ChangeConfigurationsUI extends JDialog {
         rmIgnoreFiles.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String[] options = Configuration.getIgnoreFiles();
+                Object[] options = ignoreFiles.toArray();
                 String newString = (String) JOptionPane.showInputDialog(
                         ChangeConfigurationsUI.this,
-                        "Choose a file:", "Remove Ignore File",
+                        "Choose a item:", "Remove Ignore File",
                         JOptionPane.PLAIN_MESSAGE,
                         null,
                         options,
@@ -550,11 +588,9 @@ public class ChangeConfigurationsUI extends JDialog {
                             options2[1]);
                     final int YES = 0;
                     if (answer == YES) {
-
-                        DefaultListModel modelListIgnoreFiles
-                                = (DefaultListModel) lstIgnoreFiles.getModel();
-                        modelListIgnoreFiles.removeElement(newString);
-                        if (modelListIgnoreFiles.getSize() == 0) {
+                        ignoreFiles.remove(newString);
+                        lstIgnoreFiles.setListData(ignoreFiles.toArray());
+                        if (ignoreFiles.isEmpty()) {
                             rmIgnoreFiles.setEnabled(false);
                         }
                     }
@@ -565,16 +601,87 @@ public class ChangeConfigurationsUI extends JDialog {
         return rmIgnoreFiles;
     }
     
-    public JList getLstIgnoreFiles() {
-        return lstIgnoreFiles;
+    private JButton createButtonRemoveIgnoreFilesStartingWith(){
+        rmIgnoreFilesStartingWith = new JButton("Remove");
+        rmIgnoreFilesStartingWith.setMnemonic(KeyEvent.VK_I);
+        rmIgnoreFilesStartingWith.setToolTipText("Remove ignore files Starting With");
+        rmIgnoreFilesStartingWith.setEnabled(false);
+        rmIgnoreFilesStartingWith.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Object[] options = ignoreFilesStartingWith.toArray();
+                String newString = (String) JOptionPane.showInputDialog(
+                        ChangeConfigurationsUI.this,
+                        "Choose a item:", "Remove Ignore File Starting With",
+                        JOptionPane.PLAIN_MESSAGE,
+                        null,
+                        options,
+                        options[0]);
+                if (!Strings.isNullOrEmptyOrWhiteSpace(newString)) {
+                    String[] options2 = {"Yes", "No"};
+                    int answer = JOptionPane.showOptionDialog(
+                            ChangeConfigurationsUI.this,
+                            "Remove\n" + newString,
+                            "Remove Ignore File",
+                            0,
+                            JOptionPane.QUESTION_MESSAGE,
+                            null,
+                            options2,
+                            options2[1]);
+                    final int YES = 0;
+                    if (answer == YES) {
+                        ignoreFilesStartingWith.remove(newString);
+                        lstIgnoreFilesStartingWith.setListData(ignoreFilesStartingWith.toArray());
+                        if (ignoreFilesStartingWith.isEmpty()) {
+                            rmIgnoreFilesStartingWith.setEnabled(false);
+                        }
+                    }
+                }
+            }
+        });
+
+        return rmIgnoreFilesStartingWith;
     }
-    
-    public JList getLstIgnoreFilesStartingWith() {
-        return lstIgnoreFilesStartingWith;
-    }
-    
-    public JList getLstIgnoreFilesWithExtension() {
-        return lstIgnoreFilesWithExtension;
+    private JButton createButtonRemoveIgnoreFilesWithExtension(){
+        rmIgnoreFilesWithExtension = new JButton("Remove");
+        rmIgnoreFilesWithExtension.setMnemonic(KeyEvent.VK_I);
+        rmIgnoreFilesWithExtension.setToolTipText("Remove ignore files With Extension");
+        rmIgnoreFilesWithExtension.setEnabled(false);
+        rmIgnoreFilesWithExtension.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Object[] options = ignoreFilesWithExtension.toArray();
+                String newString = (String) JOptionPane.showInputDialog(
+                        ChangeConfigurationsUI.this,
+                        "Choose a item:", "Remove Ignore File With Extension",
+                        JOptionPane.PLAIN_MESSAGE,
+                        null,
+                        options,
+                        options[0]);
+                if (!Strings.isNullOrEmptyOrWhiteSpace(newString)) {
+                    String[] options2 = {"Yes", "No"};
+                    int answer = JOptionPane.showOptionDialog(
+                            ChangeConfigurationsUI.this,
+                            "Remove\n" + newString,
+                            "Remove Ignore File",
+                            0,
+                            JOptionPane.QUESTION_MESSAGE,
+                            null,
+                            options2,
+                            options2[1]);
+                    final int YES = 0;
+                    if (answer == YES) {
+                        ignoreFilesWithExtension.remove(newString);
+                        lstIgnoreFilesWithExtension.setListData(ignoreFilesWithExtension.toArray());
+                        if (ignoreFilesWithExtension.isEmpty()) {
+                            rmIgnoreFilesWithExtension.setEnabled(false);
+                        }
+                    }
+                }
+            }
+        });
+
+        return rmIgnoreFilesWithExtension;
     }
 
     private void finish() {

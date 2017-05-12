@@ -11,6 +11,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -29,16 +30,18 @@ import javax.swing.border.EmptyBorder;
 public class DialogNewString extends JDialog{
     
     private JTextField txt;
-    private JList lst;
+    private ArrayList lst;
     private String title;
+    private JDialog dialog;
     
     private static final Dimension LABEL_TAMANHO = new JLabel("Produto: ").
                                                         getPreferredSize();
     
-    public DialogNewString(JDialog dialog, String str, JList lst){
+    public DialogNewString(JDialog dialog, String str, ArrayList lst){
         
         super(dialog, str, true);
-        
+
+        this.dialog = dialog;
         this.title = str;
         this.lst = lst;
         
@@ -83,7 +86,7 @@ public class DialogNewString extends JDialog{
         JButton btnOK = createButtonOK();
         getRootPane().setDefaultButton(btnOK);
 
-        JButton btnCancelar = createButtoncancel();
+        JButton btnCancelar = createButtonCancel();
 
         JPanel p = new JPanel();
         final int UP = 0, DOWN = 10;
@@ -104,14 +107,21 @@ public class DialogNewString extends JDialog{
             @Override
             public void actionPerformed(ActionEvent e) {
                 String s = txt.getText();
-                DefaultListModel model
-                                = (DefaultListModel) lst.getModel();
-                model.addElement(s);  
-                JOptionPane.showMessageDialog(
+                
+                boolean check = lst.add(s);
+                if (check) {   
+                        JOptionPane.showMessageDialog(
                         DialogNewString.this,
                         "Insert complete!",
                         title,
                         JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(
+                                DialogNewString.this,
+                                "Item already inserted!",
+                                title,
+                                JOptionPane.ERROR_MESSAGE);
+                    }
                     
                 dispose();
             }
@@ -119,7 +129,7 @@ public class DialogNewString extends JDialog{
         return btn;
     }
     
-    private JButton createButtoncancel() {
+    private JButton createButtonCancel() {
         JButton btn = new JButton("Cancel");
         btn.addActionListener(new ActionListener() {
             @Override
