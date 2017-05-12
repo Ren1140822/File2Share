@@ -58,7 +58,7 @@ public class UdpReceiverThread extends Thread {
                     sock.receive(udpPacket);
 
                     InetAddress address = udpPacket.getAddress();
-                    //if (!isLocalAddress(address)) {
+                    if (!isLocalAddress(address)) {
 
                         ByteBuffer wrapped = ByteBuffer.wrap(data);
                         int tcpPort = wrapped.getInt();
@@ -97,7 +97,7 @@ public class UdpReceiverThread extends Thread {
 
                         observable.activateChanges();
                         observable.notifyObservers();
-                    //}
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

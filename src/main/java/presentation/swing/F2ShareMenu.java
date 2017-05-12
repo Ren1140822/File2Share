@@ -71,7 +71,7 @@ public class F2ShareMenu extends JFrame implements Observer {
          * try { dataFiles = new TreeSet(DataFileRepository.getSharedFiles()); }
          * catch (IOException e) { JOptionPane.showMessageDialog(this, "There
          * was an error reading local files"); e.printStackTrace(); }
-        *
+         *
          */
         dataFiles = new TreeSet<>();
 
@@ -141,7 +141,10 @@ public class F2ShareMenu extends JFrame implements Observer {
                 try {
                     JFileChooser chooser = new JFileChooser(Configuration.getDownloadFolderName());
                     if (chooser.showSaveDialog(F2ShareMenu.this) == JFileChooser.APPROVE_OPTION) {
-                        ctrl.downloadDataFile(chooser.getSelectedFile().getName(),Configuration.getDownloadFolderName());
+                        SwingWorker worker = createDownloadGif();
+                        worker.execute();
+                        ctrl.downloadDataFile(chooser.getSelectedFile().getName(), Configuration.getDownloadFolderName());
+                        //worker.cancel(true);
                     }
                 } catch (IOException ex) {
                     Logger.getLogger(F2ShareMenu.class.getName()).log(Level.SEVERE, null, ex);
@@ -349,5 +352,36 @@ public class F2ShareMenu extends JFrame implements Observer {
         listShared.setModel(dataFileListModel);
         RemoteFileListModel remoteFileListModel = new RemoteFileListModel(remoteFiles);
         listDownload.setModel(remoteFileListModel);
+    }
+
+    public SwingWorker createDownloadGif() {
+        SwingWorker<Void, Void> mySwingWorker;
+        mySwingWorker = new SwingWorker<Void, Void>() {
+                JDialog dialog ;
+            @Override
+            protected Void doInBackground() throws Exception {
+               dialog = new JDialog(F2ShareMenu.this);
+                ImageIcon gif =  new ImageIcon("src/main/resources/loading.gif");
+                JLabel labelGif = new JLabel("Downloading");
+                labelGif.setIcon(gif);
+                dialog.setUndecorated(true);
+                dialog.add(labelGif);
+                dialog.pack();
+                dialog.setLocationRelativeTo(F2ShareMenu.this);
+                dialog.setVisible(true);
+                 return null;
+            }
+            
+            @Override
+            protected void done()
+            {
+                JOptionPane.showMessageDialog(F2ShareMenu.this, "Your file was downloaded sucessfully","File download",JOptionPane.DEFAULT_OPTION);
+               dialog.dispose();
+            }
+        
+          
+            
+        };
+        return mySwingWorker;
     }
 }
