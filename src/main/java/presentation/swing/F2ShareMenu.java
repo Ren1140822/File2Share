@@ -52,7 +52,7 @@ public class F2ShareMenu extends JFrame implements Observer {
     private Set<RemoteFile> remoteFiles;
     private Set<DataFile> dataFiles;
     private TcpServer server;
-    private   JDialog dialog;
+    private JDialog dialog;
 
     public F2ShareMenu() {
         super("F2Share");
@@ -144,14 +144,23 @@ public class F2ShareMenu extends JFrame implements Observer {
                             if (fileName != null) {
                                 SwingWorker worker = createDownloadGif();
                                 worker.execute();
-                                
+
                                 ctrl.downloadDataFile(fileName, Configuration.getDownloadFolderName());
-                                 JOptionPane.showMessageDialog(F2ShareMenu.this, "Your file was downloaded sucessfully", "File download", JOptionPane.DEFAULT_OPTION);
-                             
+                                JOptionPane.showMessageDialog(F2ShareMenu.this, "Your file was downloaded sucessfully", "File download", JOptionPane.DEFAULT_OPTION);
+
                                 worker.cancel(true);
                                 dialog.dispose();
                             }
                         }
+                    } else if (fileName != null) {
+                        SwingWorker worker = createDownloadGif();
+                        worker.execute();
+
+                        ctrl.downloadDataFile(fileName, Configuration.getDownloadFolderName());
+                        JOptionPane.showMessageDialog(F2ShareMenu.this, "Your file was downloaded sucessfully", "File download", JOptionPane.DEFAULT_OPTION);
+
+                        worker.cancel(true);
+                        dialog.dispose();
                     }
                 } catch (IOException ex) {
                     Logger.getLogger(F2ShareMenu.class.getName()).log(Level.SEVERE, null, ex);
@@ -368,7 +377,6 @@ public class F2ShareMenu extends JFrame implements Observer {
     public SwingWorker createDownloadGif() {
         SwingWorker<Void, Void> mySwingWorker;
         mySwingWorker = new SwingWorker<Void, Void>() {
-         
 
             @Override
             protected Void doInBackground() throws Exception {
@@ -381,23 +389,22 @@ public class F2ShareMenu extends JFrame implements Observer {
                 dialog.pack();
                 dialog.setLocationRelativeTo(F2ShareMenu.this);
                 dialog.setVisible(true);
-             
+
                 return null;
             }
 
             @Override
             protected void done() {
-               
+
             }
-            
-          
+
         };
-        
+
         return mySwingWorker;
     }
 
     public boolean findFile(String fileName) {
-        File folder = new File(Configuration.getSharedFolderName());
+        File folder = new File(Configuration.getDownloadFolderName());
         File[] files = folder.listFiles();
         for (File file : files) {
             boolean isEqual = file.getName().equals(fileName);
