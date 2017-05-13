@@ -5,6 +5,7 @@
  */
 package application;
 
+import domain.Configuration;
 import domain.DataFile;
 import java.io.File;
 import java.io.IOException;
@@ -76,11 +77,13 @@ public class CommunicationController {
      * @param fileName the NEW file name
      * @param path the NEW path
      * @return true if file downloaded
+     * @throws java.io.IOException
      */
     public boolean downloadDataFile(String fileName, String path) throws IOException {
    
             final String threadFileName = fileName;
             final String threadFilePath = path;
+         
             int fileSize;
             fileSize = tcpConnection.readFileSize();
             tcpConnection.downloadFile(threadFileName, threadFilePath, fileSize);
@@ -97,19 +100,5 @@ public class CommunicationController {
         }
         return true;
     }
-
-    /**
-     * Reads information regarding the file requested by other user.
-     *
-     * @return the string containing the information
-     */
-    public String readFileRequestInfo() {
-        try {
-            return this.tcpConnection.readFileRequestInfo();
-        } catch (IOException ex) {
-            Logger.getLogger(CommunicationController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
-    }
-
+ 
 }

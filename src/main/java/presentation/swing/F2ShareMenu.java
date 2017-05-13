@@ -22,6 +22,7 @@ import presentation.swing.components.RemoteFileListModel;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
@@ -51,6 +52,7 @@ public class F2ShareMenu extends JFrame implements Observer {
     private Set<RemoteFile> remoteFiles;
     private Set<DataFile> dataFiles;
     private TcpServer server;
+    private   JDialog dialog;
 
     public F2ShareMenu() {
         super("F2Share");
@@ -66,16 +68,13 @@ public class F2ShareMenu extends JFrame implements Observer {
         remoteFiles = new TreeSet<>();
 
         // TODO DataFileRepository.getSharedFiles() => ERROR  nullpointer
-        
-        try { 
-            dataFiles = new TreeSet(DataFileRepository.getSharedFiles()); }
-        catch (IOException e) { 
-            JOptionPane.showMessageDialog(this, 
-                    "There was an error reading local files"); 
+        try {
+            dataFiles = new TreeSet(DataFileRepository.getSharedFiles());
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this,
+                    "There was an error reading local files");
             e.printStackTrace();
         }
-        
-        
 
         createComponents();
 
@@ -138,12 +137,21 @@ public class F2ShareMenu extends JFrame implements Observer {
                 CommunicationController ctrl = new CommunicationController(((RemoteFile) listDownload.getSelectedValue()).getAddress(), server, ((RemoteFile) listDownload.getSelectedValue()).getTcpPort());
                 ctrl.sendFileRequest(((RemoteFile) listDownload.getSelectedValue()).getName());
                 try {
-                    JFileChooser chooser = new JFileChooser(Configuration.getDownloadFolderName());
-                    if (chooser.showSaveDialog(F2ShareMenu.this) == JFileChooser.APPROVE_OPTION) {
-                        SwingWorker worker = createDownloadGif();
-                        worker.execute();
-                        ctrl.downloadDataFile(chooser.getSelectedFile().getName(), Configuration.getDownloadFolderName());
-                        //worker.cancel(true);
+                    String fileName;
+                    fileName = JOptionPane.showInputDialog(F2ShareMenu.this, "Save as:", ((RemoteFile) listDownload.getSelectedValue()).getName());
+                    if (findFile(fileName)) {
+                        if (JOptionPane.showConfirmDialog(F2ShareMenu.this, "File with provided name is already on disk. Overwrite?", "File found", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                            if (fileName != null) {
+                                SwingWorker worker = createDownloadGif();
+                                worker.execute();
+                                
+                                ctrl.downloadDataFile(fileName, Configuration.getDownloadFolderName());
+                                 JOptionPane.showMessageDialog(F2ShareMenu.this, "Your file was downloaded sucessfully", "File download", JOptionPane.DEFAULT_OPTION);
+                             
+                                worker.cancel(true);
+                                dialog.dispose();
+                            }
+                        }
                     }
                 } catch (IOException ex) {
                     Logger.getLogger(F2ShareMenu.class.getName()).log(Level.SEVERE, null, ex);
@@ -151,6 +159,7 @@ public class F2ShareMenu extends JFrame implements Observer {
             }
 
             @Override
+
             public void mousePressed(MouseEvent me) {
 
             }
@@ -170,7 +179,8 @@ public class F2ShareMenu extends JFrame implements Observer {
 
             }
 
-        });
+        }
+        );
         panelDownload.add(button, BorderLayout.SOUTH);
         return panelDownload;
     }
@@ -277,8 +287,10 @@ public class F2ShareMenu extends JFrame implements Observer {
             public void actionPerformed(ActionEvent e) {
                 try {
                     configurations();
+
                 } catch (IOException ex) {
-                    Logger.getLogger(F2ShareMenu.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(F2ShareMenu.class
+                            .getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
@@ -356,11 +368,12 @@ public class F2ShareMenu extends JFrame implements Observer {
     public SwingWorker createDownloadGif() {
         SwingWorker<Void, Void> mySwingWorker;
         mySwingWorker = new SwingWorker<Void, Void>() {
-                JDialog dialog ;
+         
+
             @Override
             protected Void doInBackground() throws Exception {
-               dialog = new JDialog(F2ShareMenu.this);
-                ImageIcon gif =  new ImageIcon("src/main/resources/loading.gif");
+                dialog = new JDialog(F2ShareMenu.this);
+                ImageIcon gif = new ImageIcon("src/main/resources/loading.gif");
                 JLabel labelGif = new JLabel("Downloading");
                 labelGif.setIcon(gif);
                 dialog.setUndecorated(true);
@@ -368,19 +381,30 @@ public class F2ShareMenu extends JFrame implements Observer {
                 dialog.pack();
                 dialog.setLocationRelativeTo(F2ShareMenu.this);
                 dialog.setVisible(true);
-                 return null;
+             
+                return null;
             }
-            
+
             @Override
-            protected void done()
-            {
-                JOptionPane.showMessageDialog(F2ShareMenu.this, "Your file was downloaded sucessfully","File download",JOptionPane.DEFAULT_OPTION);
-               dialog.dispose();
+            protected void done() {
+               
             }
-        
-          
             
+          
         };
+        
         return mySwingWorker;
+    }
+
+    public boolean findFile(String fileName) {
+        File folder = new File(Configuration.getSharedFolderName());
+        File[] files = folder.listFiles();
+        for (File file : files) {
+            boolean isEqual = file.getName().equals(fileName);
+            if (isEqual) {
+                return true;
+            }
+        }
+        return false;
     }
 }
