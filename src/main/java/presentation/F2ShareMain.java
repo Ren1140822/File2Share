@@ -6,6 +6,10 @@
 package presentation;
 
 import presentation.swing.F2ShareMenu;
+import presentation.swing.LanguageChooserDialog;
+
+import javax.swing.*;
+import java.util.Locale;
 
 /**
  * Represents the application startup.
@@ -20,6 +24,10 @@ public class F2ShareMain {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+
+        Locale locale = LanguageChooserDialog.chooseLanguage();
+        Locale.setDefault(locale);
+        JOptionPane.setDefaultLocale(locale);
 
         final F2ShareMenu F = new F2ShareMenu();
 

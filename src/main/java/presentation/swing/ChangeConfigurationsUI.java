@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.border.EmptyBorder;
@@ -61,23 +62,31 @@ public class ChangeConfigurationsUI extends JDialog {
     private JFileChooser fileChooser;
     
     private static final int WIDTH = 500, LENGTH = 500;
+
+    /**
+     * The resource bundle.
+     */
+    private final ResourceBundle resourceBundle;
     
-    private static final String UDP_PORT = "UDP Port Number: ";
-    private static final String UDP_TIME = "UDP Time Annoucement: ";
-    private static final String REFRESH_TIME = "Refresh Time Annoucement: ";
-    private static final String SHARED_FOLDER = "Shared Folder: ";
-    private static final String DOWNLOAD_FOLDER = "Download Folder: ";
-    private static final String IGNORE_FOLDERS = "Ignore Folders: ";
-    private static final String IGNORE_FILES_WITHOUT_EXT = "Ignore Files Without Extension: ";
-    private static final String IGNORE_FILES = "Ignore Files: ";
-    private static final String IGNORE_FILES_STARTING_WITH = "Ignore Files Starting With: ";
-    private static final String IGNORE_FILES_WITH_EXTENSION = "Ignore Files With Extension: ";
+    private static final String UDP_PORT = ResourceBundle.getBundle("language.MessagesBundle").getString("udp_port_number_conf");
+    private static final String UDP_TIME = ResourceBundle.getBundle("language.MessagesBundle").getString("udp_announcement_time_conf");
+    private static final String REFRESH_TIME = ResourceBundle.getBundle("language.MessagesBundle").getString("remote_files_refresh_time_conf");
+    private static final String SHARED_FOLDER = ResourceBundle.getBundle("language.MessagesBundle").getString("local_files_folder_conf");
+    private static final String DOWNLOAD_FOLDER = ResourceBundle.getBundle("language.MessagesBundle").getString("remote_files_folder_conf");
+    private static final String IGNORE_FOLDERS = ResourceBundle.getBundle("language.MessagesBundle").getString("ignore_folders_conf");
+    private static final String IGNORE_FILES_WITHOUT_EXT = ResourceBundle.getBundle("language.MessagesBundle").getString("ignore_files_without_extension_conf");
+    private static final String IGNORE_FILES = ResourceBundle.getBundle("language.MessagesBundle").getString("ignore_files_conf");
+    private static final String IGNORE_FILES_STARTING_WITH = ResourceBundle.getBundle("language.MessagesBundle").getString("ignore_files_starting_with_conf");
+    private static final String IGNORE_FILES_WITH_EXTENSION = ResourceBundle.getBundle("language.MessagesBundle").getString("ignore_files_with_extension_conf");
     private static final Dimension LABEL_SIZE = new JLabel(IGNORE_FILES_WITHOUT_EXT).
                                                         getPreferredSize(); 
     
     public ChangeConfigurationsUI(JFrame frame) throws IOException{
         
-        super(frame, "Configurations", true);
+        super(frame, true);
+
+        resourceBundle = ResourceBundle.getBundle("language.MessagesBundle");
+        setTitle(resourceBundle.getString("configurations"));
 
         controller = new ChangeConfigurationController();
 
@@ -113,7 +122,7 @@ public class ChangeConfigurationsUI extends JDialog {
 
         JPanel p = new JPanel(new GridLayout(5, 5));
 
-        p.setBorder(BorderFactory.createTitledBorder("Configurations:"));
+        p.setBorder(BorderFactory.createTitledBorder(resourceBundle.getString("configurations")));
 
         int aux = 5, sizePath = 20;
 
@@ -144,7 +153,7 @@ public class ChangeConfigurationsUI extends JDialog {
         downloadChooser = createButonDownloadChooser();
         downloadChooser.setEnabled(false);
         
-        radioBtnIgnoreFoldersTRUE = new JRadioButton("True");
+        radioBtnIgnoreFoldersTRUE = new JRadioButton(resourceBundle.getString("true"));
         radioBtnIgnoreFoldersTRUE.setEnabled(false);        
         radioBtnIgnoreFoldersTRUE.addActionListener(new ActionListener() {
             @Override
@@ -154,7 +163,7 @@ public class ChangeConfigurationsUI extends JDialog {
                 }
             }
         });
-        radioBtnIgnoreFoldersFALSE = new JRadioButton("False");
+        radioBtnIgnoreFoldersFALSE = new JRadioButton(resourceBundle.getString("false"));
         radioBtnIgnoreFoldersFALSE.setEnabled(false);  
         radioBtnIgnoreFoldersFALSE.addActionListener(new ActionListener() {
             @Override
@@ -164,7 +173,7 @@ public class ChangeConfigurationsUI extends JDialog {
                 }
             }
         });
-        radioBtnIgnoreFilesWithoutExtensionTRUE = new JRadioButton("True");
+        radioBtnIgnoreFilesWithoutExtensionTRUE = new JRadioButton(resourceBundle.getString("true"));
         radioBtnIgnoreFilesWithoutExtensionTRUE.setEnabled(false);
         radioBtnIgnoreFilesWithoutExtensionTRUE.addActionListener(new ActionListener() {
             @Override
@@ -174,7 +183,7 @@ public class ChangeConfigurationsUI extends JDialog {
                 }
             }
         });
-        radioBtnIgnoreFilesWithoutExtensionFALSE  = new JRadioButton("False");
+        radioBtnIgnoreFilesWithoutExtensionFALSE  = new JRadioButton(resourceBundle.getString("false"));
         radioBtnIgnoreFilesWithoutExtensionFALSE.setEnabled(false);        
         radioBtnIgnoreFilesWithoutExtensionFALSE.addActionListener(new ActionListener() {
             @Override
@@ -186,8 +195,8 @@ public class ChangeConfigurationsUI extends JDialog {
         });
 
         p.add(createPanelLabelText(UDP_PORT, txtUDPPort, ""));
-        p.add(createPanelLabelText(UDP_TIME, txtUDPTime, "seconds"));
-        p.add(createPanelLabelText(REFRESH_TIME, txtRefreshFile, "seconds"));        
+        p.add(createPanelLabelText(UDP_TIME, txtUDPTime, resourceBundle.getString("seconds")));
+        p.add(createPanelLabelText(REFRESH_TIME, txtRefreshFile, resourceBundle.getString("seconds")));
         p.add(createPanelLabelRadioBtn(IGNORE_FOLDERS, radioBtnIgnoreFoldersTRUE, radioBtnIgnoreFoldersFALSE));
         p.add(createPanelLabelRadioBtn(IGNORE_FILES_WITHOUT_EXT, radioBtnIgnoreFilesWithoutExtensionTRUE, radioBtnIgnoreFilesWithoutExtensionFALSE));
         p.add(new JLabel());
@@ -233,9 +242,9 @@ public class ChangeConfigurationsUI extends JDialog {
     } 
     
     private JButton createButonSharedChooser(){
-        sharedChooser = new JButton("Change Shared Folder");
+        sharedChooser = new JButton(resourceBundle.getString("change_local_folder"));
         sharedChooser.setMnemonic(KeyEvent.VK_C);
-        sharedChooser.setToolTipText("Change Shared Folder");
+        sharedChooser.setToolTipText(resourceBundle.getString("change_local_folder"));
         sharedChooser.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -255,9 +264,9 @@ public class ChangeConfigurationsUI extends JDialog {
     }
     
     private JButton createButonDownloadChooser(){
-        downloadChooser = new JButton("Change Download Folder");
+        downloadChooser = new JButton(resourceBundle.getString("change_remote_folder"));
         downloadChooser.setMnemonic(KeyEvent.VK_D);
-        downloadChooser.setToolTipText("Change Download Folder");
+        downloadChooser.setToolTipText(resourceBundle.getString("change_remote_folder"));
         downloadChooser.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -312,7 +321,7 @@ public class ChangeConfigurationsUI extends JDialog {
 
         JPanel p = new JPanel(l);
 
-        p.setBorder(BorderFactory.createTitledBorder("Options:"));
+        p.setBorder(BorderFactory.createTitledBorder(resourceBundle.getString("options")));
 
         JButton bt1 = createButonSave();
         JButton bt2 = createButonEdit();
@@ -336,9 +345,9 @@ public class ChangeConfigurationsUI extends JDialog {
     }
 
     private JButton createButonSave() {
-        saveBtn = new JButton("Save");
+        saveBtn = new JButton(resourceBundle.getString("save"));
         saveBtn.setMnemonic(KeyEvent.VK_S);
-        saveBtn.setToolTipText("Save new configurations");
+        saveBtn.setToolTipText(resourceBundle.getString("save_new_configurations"));
         saveBtn.setEnabled(false);
         saveBtn.addActionListener(new ActionListener() {
             @Override
@@ -369,22 +378,22 @@ public class ChangeConfigurationsUI extends JDialog {
                     } else {
                         JOptionPane.showMessageDialog(
                                 null,
-                                "It was not possible change configurations!\n",
-                                "Error",
+                                resourceBundle.getString("change_configurations_error"),
+                                resourceBundle.getString("error"),
                                 JOptionPane.ERROR_MESSAGE);
                     }
                 }catch (IllegalStateException | NumberFormatException ex ){
                     JOptionPane.showMessageDialog(
                                     null,
-                                    "Invalid data!",
-                                    "Error",
+                            resourceBundle.getString("invalid_data"),
+                            resourceBundle.getString("error"),
                                     JOptionPane.ERROR_MESSAGE); 
                 } catch (FileNotFoundException exc) {
                     Logger.getLogger(ChangeConfigurationsUI.class.getName()).log(Level.SEVERE, null, exc);
                     JOptionPane.showMessageDialog(
                             null,
-                            "Problem with configuration file!",
-                            "Error",
+                            resourceBundle.getString("change_configurations_error"),
+                            resourceBundle.getString("error"),
                             JOptionPane.ERROR_MESSAGE);
                 }
             }
@@ -394,9 +403,9 @@ public class ChangeConfigurationsUI extends JDialog {
     }
 
     private JButton createButonEdit() {
-        editBtn = new JButton("Edit");
+        editBtn = new JButton(resourceBundle.getString("edit"));
         editBtn.setMnemonic(KeyEvent.VK_S);
-        editBtn.setToolTipText("Edit configurations");
+        editBtn.setToolTipText(resourceBundle.getString("edit_configurations"));
         editBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -512,9 +521,9 @@ public class ChangeConfigurationsUI extends JDialog {
     }
     
     private JButton createButtonAddIgnoreFiles(){
-        addIgnoreFiles = new JButton("Add");
+        addIgnoreFiles = new JButton(resourceBundle.getString("add"));
         addIgnoreFiles.setMnemonic(KeyEvent.VK_I);
-        addIgnoreFiles.setToolTipText("Add ignore files");
+        addIgnoreFiles.setToolTipText(resourceBundle.getString("add_to_ignored_files"));
         addIgnoreFiles.setEnabled(false);
         addIgnoreFiles.addActionListener(new ActionListener() {
             @Override
@@ -528,9 +537,9 @@ public class ChangeConfigurationsUI extends JDialog {
     }
     
     private JButton createButtonAddIgnoreFilesStartingWith(){
-        addIgnoreFilesStartingWith = new JButton("Add");
+        addIgnoreFilesStartingWith = new JButton(resourceBundle.getString("add"));
         addIgnoreFilesStartingWith.setMnemonic(KeyEvent.VK_I);
-        addIgnoreFilesStartingWith.setToolTipText("Add ignore files Starting With");
+        addIgnoreFilesStartingWith.setToolTipText(resourceBundle.getString("add_to_ignored_files_starting_with"));
         addIgnoreFilesStartingWith.setEnabled(false);
         addIgnoreFilesStartingWith.addActionListener(new ActionListener() {
             @Override
@@ -544,9 +553,9 @@ public class ChangeConfigurationsUI extends JDialog {
     }
     
     private JButton createButtonAddIgnoreFilesWithExtension(){
-        addIgnoreFilesWithExtension = new JButton("Add");
+        addIgnoreFilesWithExtension = new JButton(resourceBundle.getString("add"));
         addIgnoreFilesWithExtension.setMnemonic(KeyEvent.VK_I);
-        addIgnoreFilesWithExtension.setToolTipText("Add ignore files With Extension");
+        addIgnoreFilesWithExtension.setToolTipText(resourceBundle.getString("add_to_ignored_files_with_extension"));
         addIgnoreFilesWithExtension.setEnabled(false);
         addIgnoreFilesWithExtension.addActionListener(new ActionListener() {
             @Override
@@ -560,9 +569,9 @@ public class ChangeConfigurationsUI extends JDialog {
     }
     
     private JButton createButtonRemoveIgnoreFiles(){
-        rmIgnoreFiles = new JButton("Remove");
+        rmIgnoreFiles = new JButton(resourceBundle.getString("remove"));
         rmIgnoreFiles.setMnemonic(KeyEvent.VK_I);
-        rmIgnoreFiles.setToolTipText("Remove ignore files");
+        rmIgnoreFiles.setToolTipText(resourceBundle.getString("remove_ignored_file"));
         rmIgnoreFiles.setEnabled(false);
         rmIgnoreFiles.addActionListener(new ActionListener() {
             @Override
@@ -570,17 +579,17 @@ public class ChangeConfigurationsUI extends JDialog {
                 Object[] options = ignoreFiles.toArray();
                 String newString = (String) JOptionPane.showInputDialog(
                         ChangeConfigurationsUI.this,
-                        "Choose a item:", "Remove Ignore File",
+                        resourceBundle.getString("choose_an_item"), resourceBundle.getString("remove_ignored_file"),
                         JOptionPane.PLAIN_MESSAGE,
                         null,
                         options,
                         options[0]);
                 if (!Strings.isNullOrEmptyOrWhiteSpace(newString)) {
-                    String[] options2 = {"Yes", "No"};
+                    String[] options2 = {resourceBundle.getString("yes"), resourceBundle.getString("no")};
                     int answer = JOptionPane.showOptionDialog(
                             ChangeConfigurationsUI.this,
-                            "Remove\n" + newString,
-                            "Remove Ignore File",
+                            resourceBundle.getString("remove") + "\n" + newString,
+                            resourceBundle.getString("remove_ignored_file"),
                             0,
                             JOptionPane.QUESTION_MESSAGE,
                             null,
@@ -602,9 +611,9 @@ public class ChangeConfigurationsUI extends JDialog {
     }
     
     private JButton createButtonRemoveIgnoreFilesStartingWith(){
-        rmIgnoreFilesStartingWith = new JButton("Remove");
+        rmIgnoreFilesStartingWith = new JButton(resourceBundle.getString("remove"));
         rmIgnoreFilesStartingWith.setMnemonic(KeyEvent.VK_I);
-        rmIgnoreFilesStartingWith.setToolTipText("Remove ignore files Starting With");
+        rmIgnoreFilesStartingWith.setToolTipText(resourceBundle.getString("remove_from_ignored_files_starting_with"));
         rmIgnoreFilesStartingWith.setEnabled(false);
         rmIgnoreFilesStartingWith.addActionListener(new ActionListener() {
             @Override
@@ -612,17 +621,17 @@ public class ChangeConfigurationsUI extends JDialog {
                 Object[] options = ignoreFilesStartingWith.toArray();
                 String newString = (String) JOptionPane.showInputDialog(
                         ChangeConfigurationsUI.this,
-                        "Choose a item:", "Remove Ignore File Starting With",
+                        resourceBundle.getString("choose_an_item"), resourceBundle.getString("remove_from_ignored_files_starting_with"),
                         JOptionPane.PLAIN_MESSAGE,
                         null,
                         options,
                         options[0]);
                 if (!Strings.isNullOrEmptyOrWhiteSpace(newString)) {
-                    String[] options2 = {"Yes", "No"};
+                    String[] options2 = {resourceBundle.getString("yes"), resourceBundle.getString("no")};
                     int answer = JOptionPane.showOptionDialog(
                             ChangeConfigurationsUI.this,
-                            "Remove\n" + newString,
-                            "Remove Ignore File",
+                            resourceBundle.getString("remove") + "\n" + newString,
+                            resourceBundle.getString("remove_ignored_file"),
                             0,
                             JOptionPane.QUESTION_MESSAGE,
                             null,
@@ -643,9 +652,9 @@ public class ChangeConfigurationsUI extends JDialog {
         return rmIgnoreFilesStartingWith;
     }
     private JButton createButtonRemoveIgnoreFilesWithExtension(){
-        rmIgnoreFilesWithExtension = new JButton("Remove");
+        rmIgnoreFilesWithExtension = new JButton(resourceBundle.getString("remove"));
         rmIgnoreFilesWithExtension.setMnemonic(KeyEvent.VK_I);
-        rmIgnoreFilesWithExtension.setToolTipText("Remove ignore files With Extension");
+        rmIgnoreFilesWithExtension.setToolTipText(resourceBundle.getString("remove_from_ignored_files_with_extension"));
         rmIgnoreFilesWithExtension.setEnabled(false);
         rmIgnoreFilesWithExtension.addActionListener(new ActionListener() {
             @Override
@@ -653,17 +662,17 @@ public class ChangeConfigurationsUI extends JDialog {
                 Object[] options = ignoreFilesWithExtension.toArray();
                 String newString = (String) JOptionPane.showInputDialog(
                         ChangeConfigurationsUI.this,
-                        "Choose a item:", "Remove Ignore File With Extension",
+                        resourceBundle.getString("choose_an_item"), resourceBundle.getString("remove_from_ignored_files_with_extension"),
                         JOptionPane.PLAIN_MESSAGE,
                         null,
                         options,
                         options[0]);
                 if (!Strings.isNullOrEmptyOrWhiteSpace(newString)) {
-                    String[] options2 = {"Yes", "No"};
+                    String[] options2 = {resourceBundle.getString("yes"), resourceBundle.getString("no")};
                     int answer = JOptionPane.showOptionDialog(
                             ChangeConfigurationsUI.this,
-                            "Remove\n" + newString,
-                            "Remove Ignore File",
+                            resourceBundle.getString("remove") + "\n" + newString,
+                            resourceBundle.getString("remove_ignored_file"),
                             0,
                             JOptionPane.QUESTION_MESSAGE,
                             null,
@@ -687,8 +696,8 @@ public class ChangeConfigurationsUI extends JDialog {
     private void finish() {
         JOptionPane.showMessageDialog(
                 null,
-                "Configurations changed successfully!",
-                "Configurations",
+                resourceBundle.getString("configurations_changed_successfully"),
+                resourceBundle.getString("configurations"),
                 JOptionPane.INFORMATION_MESSAGE);
         dispose();
     }

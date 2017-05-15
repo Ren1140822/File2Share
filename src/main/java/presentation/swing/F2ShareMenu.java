@@ -24,10 +24,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,9 +37,14 @@ import java.util.logging.Logger;
  */
 public class F2ShareMenu extends JFrame implements Observer {
 
+    /**
+     * The resource bundle.
+     */
+    private final ResourceBundle resourceBundle;
+
     private static final int WIDTH = 500, LENGTH = 500;
-    private static final String DOWNLOAD = "Download";
-    private static final String SHARE = "Share";
+    private static final String DOWNLOAD = ResourceBundle.getBundle("language.MessagesBundle").getString("remote_files");
+    private static final String SHARE = ResourceBundle.getBundle("language.MessagesBundle").getString("local_files");
     private StartConfiguration configuration;
     private JPanel panelShared;
     private JPanel panelDownload;
@@ -55,12 +57,13 @@ public class F2ShareMenu extends JFrame implements Observer {
     private JDialog dialog;
 
     public F2ShareMenu() {
-        super("F2Share");
+        resourceBundle = ResourceBundle.getBundle("language.MessagesBundle");
+        setTitle(resourceBundle.getString("window_title"));
 
         try {
             configuration = new StartConfiguration();
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "There was an error reading configuration file");
+            JOptionPane.showMessageDialog(this, resourceBundle.getString("error_reading_configuration_file"));
             e.printStackTrace();
         }
 
@@ -130,7 +133,7 @@ public class F2ShareMenu extends JFrame implements Observer {
         listDownload.setCellRenderer(new RemoteFileListCellRenderer());
 
         panelDownload.add(createPanelList(listDownload), BorderLayout.CENTER);
-        JButton button = new JButton("DOWNLOAD");
+        JButton button = new JButton(resourceBundle.getString("download"));
         button.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent me) {
@@ -138,15 +141,15 @@ public class F2ShareMenu extends JFrame implements Observer {
                 ctrl.sendFileRequest(((RemoteFile) listDownload.getSelectedValue()).getName());
                 try {
                     String fileName;
-                    fileName = JOptionPane.showInputDialog(F2ShareMenu.this, "Save as:", ((RemoteFile) listDownload.getSelectedValue()).getName());
+                    fileName = JOptionPane.showInputDialog(F2ShareMenu.this, resourceBundle.getString("save_as"), ((RemoteFile) listDownload.getSelectedValue()).getName());
                     if (findFile(fileName)) {
-                        if (JOptionPane.showConfirmDialog(F2ShareMenu.this, "File with provided name is already on disk. Overwrite?", "File found", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                        if (JOptionPane.showConfirmDialog(F2ShareMenu.this, resourceBundle.getString("file_exists_overwrite_confirmation"), resourceBundle.getString("file_found"), JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                             if (fileName != null) {
                                 SwingWorker worker = createDownloadGif();
                                 worker.execute();
 
                                 ctrl.downloadDataFile(fileName, Configuration.getDownloadFolderName());
-                                JOptionPane.showMessageDialog(F2ShareMenu.this, "Your file was downloaded sucessfully", "File download", JOptionPane.DEFAULT_OPTION);
+                                JOptionPane.showMessageDialog(F2ShareMenu.this, resourceBundle.getString("download_successfully"), resourceBundle.getString("download"), JOptionPane.DEFAULT_OPTION);
 
                                 worker.cancel(true);
                                 dialog.dispose();
@@ -157,7 +160,7 @@ public class F2ShareMenu extends JFrame implements Observer {
                         worker.execute();
 
                         ctrl.downloadDataFile(fileName, Configuration.getDownloadFolderName());
-                        JOptionPane.showMessageDialog(F2ShareMenu.this, "Your file was downloaded sucessfully", "File download", JOptionPane.DEFAULT_OPTION);
+                        JOptionPane.showMessageDialog(F2ShareMenu.this, resourceBundle.getString("download_successfully"), resourceBundle.getString("download"), JOptionPane.DEFAULT_OPTION);
 
                         worker.cancel(true);
                         dialog.dispose();
@@ -228,7 +231,7 @@ public class F2ShareMenu extends JFrame implements Observer {
     }
 
     private JMenu createFileMenu() {
-        JMenu menu = new JMenu("File");
+        JMenu menu = new JMenu(resourceBundle.getString("file"));
         menu.setMnemonic(KeyEvent.VK_F);
 
         menu.add(createItemConfigurations());
@@ -240,7 +243,7 @@ public class F2ShareMenu extends JFrame implements Observer {
     }
 
     private JMenu createOptionsMenu() {
-        JMenu menu = new JMenu("Options");
+        JMenu menu = new JMenu(resourceBundle.getString("options"));
         menu.setMnemonic(KeyEvent.VK_O);
 
         menu.add(createSubMenuStyle());
@@ -252,7 +255,7 @@ public class F2ShareMenu extends JFrame implements Observer {
     }
 
     private JMenu createSubMenuStyle() {
-        JMenu menu = new JMenu("Style");
+        JMenu menu = new JMenu(resourceBundle.getString("style"));
         menu.setMnemonic(KeyEvent.VK_S);
 
         for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
@@ -280,7 +283,7 @@ public class F2ShareMenu extends JFrame implements Observer {
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(F2ShareMenu.this,
                             ex.getMessage(),
-                            "Estilo " + menuItem.getActionCommand(),
+                            resourceBundle.getString("style") + menuItem.getActionCommand(),
                             JOptionPane.ERROR_MESSAGE);
                 }
             }
@@ -289,7 +292,7 @@ public class F2ShareMenu extends JFrame implements Observer {
     }
 
     private JMenuItem createItemConfigurations() {
-        JMenuItem item = new JMenuItem("Configurations", KeyEvent.VK_C);
+        JMenuItem item = new JMenuItem(resourceBundle.getString("configurations"), KeyEvent.VK_C);
         item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.ALT_MASK));
         item.addActionListener(new ActionListener() {
             @Override
@@ -312,7 +315,7 @@ public class F2ShareMenu extends JFrame implements Observer {
      * @return MenuItem Sair
      */
     private JMenuItem createItemExit() {
-        JMenuItem item = new JMenuItem("Exit", KeyEvent.VK_E);
+        JMenuItem item = new JMenuItem(resourceBundle.getString("exit"), KeyEvent.VK_E);
         item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.ALT_MASK));
         item.addActionListener(new ActionListener() {
             @Override
@@ -324,18 +327,14 @@ public class F2ShareMenu extends JFrame implements Observer {
     }
 
     private JMenuItem createItemAbout() {
-        JMenuItem item = new JMenuItem("About", KeyEvent.VK_A);
+        JMenuItem item = new JMenuItem(resourceBundle.getString("about"), KeyEvent.VK_A);
         item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_MASK));
         item.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JOptionPane.showMessageDialog(F2ShareMenu.this,
-                        "F2Share\n\n"
-                        + "1060503 - Pedro Fernandes\n"
-                        + "1140822 - Renato Oliveira\n"
-                        + "1151159 - Ivo Ferro\n"
-                        + "\nRCOMP - 2DD - 2016/2017\n",
-                        "About",
+                        resourceBundle.getString("about_text"),
+                        resourceBundle.getString("about"),
                         JOptionPane.INFORMATION_MESSAGE);
             }
         });
@@ -347,13 +346,14 @@ public class F2ShareMenu extends JFrame implements Observer {
     }
 
     private void exitAPP() {
-        String[] op = {"Yes", "No"};
-        String question = "Close aplication?";
+        String[] op = {resourceBundle.getString("yes"), resourceBundle.getString("no")};
+        String question = resourceBundle.getString("close_application_question");
         int opcao = JOptionPane.showOptionDialog(F2ShareMenu.this, question,
                 this.getTitle(), JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE, null, op, op[0]);
         if (opcao == JOptionPane.YES_OPTION) {
             dispose();
+            System.exit(0);
         } else {
             setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         }
@@ -382,7 +382,7 @@ public class F2ShareMenu extends JFrame implements Observer {
             protected Void doInBackground() throws Exception {
                 dialog = new JDialog(F2ShareMenu.this);
                 ImageIcon gif = new ImageIcon("src/main/resources/loading.gif");
-                JLabel labelGif = new JLabel("Downloading");
+                JLabel labelGif = new JLabel(resourceBundle.getString("downloading"));
                 labelGif.setIcon(gif);
                 dialog.setUndecorated(true);
                 dialog.add(labelGif);

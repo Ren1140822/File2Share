@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.ResourceBundle;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -28,18 +29,25 @@ import javax.swing.border.EmptyBorder;
  * @author Pedro Fernandes
  */
 public class DialogNewString extends JDialog{
+
+    /**
+     * The resource bundle.
+     */
+    private final ResourceBundle resourceBundle;
     
     private JTextField txt;
     private ArrayList lst;
     private String title;
     private JDialog dialog;
     
-    private static final Dimension LABEL_TAMANHO = new JLabel("Produto: ").
+    private static final Dimension LABEL_TAMANHO = new JLabel("AAAAAAAAA").
                                                         getPreferredSize();
-    
+
     public DialogNewString(JDialog dialog, String str, ArrayList lst){
         
         super(dialog, str, true);
+
+        resourceBundle = ResourceBundle.getBundle("language.MessagesBundle");
 
         this.dialog = dialog;
         this.title = str;
@@ -64,7 +72,7 @@ public class DialogNewString extends JDialog{
     }
     
     private JPanel createPanelName() {
-        JLabel lbl = new JLabel("Insert: ", JLabel.RIGHT);
+        JLabel lbl = new JLabel(resourceBundle.getString("insert"), JLabel.RIGHT);
         lbl.setPreferredSize(LABEL_TAMANHO);
 
         txt = new JTextField(10);
@@ -100,9 +108,9 @@ public class DialogNewString extends JDialog{
     }
     
     private JButton createButtonOK() {
-        JButton btn = new JButton("OK");
+        JButton btn = new JButton(resourceBundle.getString("ok"));
         btn.setMnemonic(KeyEvent.VK_O);
-        btn.setToolTipText("Insert confirmation");
+        btn.setToolTipText(resourceBundle.getString("insert_confirmation"));
         btn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -112,13 +120,13 @@ public class DialogNewString extends JDialog{
                 if (check) {   
                         JOptionPane.showMessageDialog(
                         DialogNewString.this,
-                        "Insert complete!",
+                                resourceBundle.getString("insert_completed"),
                         title,
                         JOptionPane.INFORMATION_MESSAGE);
                     } else {
                         JOptionPane.showMessageDialog(
                                 DialogNewString.this,
-                                "Item already inserted!",
+                                resourceBundle.getString("item_already_exists"),
                                 title,
                                 JOptionPane.ERROR_MESSAGE);
                     }
@@ -130,7 +138,7 @@ public class DialogNewString extends JDialog{
     }
     
     private JButton createButtonCancel() {
-        JButton btn = new JButton("Cancel");
+        JButton btn = new JButton(resourceBundle.getString("cancel"));
         btn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
