@@ -31,7 +31,23 @@ public class DataFileRepository {
         for (File file : listOfFiles) {
             String fileName = file.getName();
             byte[] data = Files.readAllBytes(file.toPath());
-            // FIXME if the file has an extension to be ignored, ignore it
+            dataFiles.add(new DataFile(fileName, data));
+        }
+
+        return dataFiles;
+    }
+
+    public static List<DataFile> getDownloadedFiles() throws IOException {
+
+        List<DataFile> dataFiles = new ArrayList<>();
+
+        String directory = Configuration.getDownloadFolderName();
+        File folder = new File(directory);
+        File[] listOfFiles = folder.listFiles();
+
+        for (File file : listOfFiles) {
+            String fileName = file.getName();
+            byte[] data = Files.readAllBytes(file.toPath());
             dataFiles.add(new DataFile(fileName, data));
         }
 

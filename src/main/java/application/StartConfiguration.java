@@ -94,6 +94,8 @@ public final class StartConfiguration {
             createConfigurationFile();
         } catch (IOException io) {
             createConfigurationFile();
+        } catch (ArrayIndexOutOfBoundsException arr) {
+            createConfigurationFile();
         }
 
         return null;
