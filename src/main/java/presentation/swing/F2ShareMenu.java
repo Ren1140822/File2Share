@@ -22,8 +22,11 @@ import presentation.swing.components.RemoteFileListModel;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -57,7 +60,6 @@ public class F2ShareMenu extends JFrame implements Observer {
     private Set<RemoteFile> remoteFiles;
     private Set<DataFile> dataFiles;
     private TcpServer server;
-    private JDialog dialog;
 
     public F2ShareMenu() {
         resourceBundle = ResourceBundle.getBundle("language.MessagesBundle");
@@ -139,7 +141,7 @@ public class F2ShareMenu extends JFrame implements Observer {
         panelDownload.add(createPanelList(listDownload), BorderLayout.CENTER);
         buttonDownload = new JButton(resourceBundle.getString("download"));
         buttonDownload.setEnabled(false);
-        
+
         listDownload.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
@@ -162,27 +164,70 @@ public class F2ShareMenu extends JFrame implements Observer {
                     if (findFile(fileName)) {
                         if (JOptionPane.showConfirmDialog(F2ShareMenu.this, resourceBundle.getString("file_exists_overwrite_confirmation"), resourceBundle.getString("file_found"), JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                             if (fileName != null) {
-                                SwingWorker worker = createDownloadGif();
-                                worker.execute();
+                                final JDialog dialog = new JDialog(F2ShareMenu.this);
+                                Execute(dialog);
+                                SwingWorker<Void, Void> mySwingWorker = new SwingWorker<Void, Void>() {
+                                    @Override
+                                    protected Void doInBackground() throws Exception {
 
-                                ctrl.downloadDataFile(fileName, Configuration.getDownloadFolderName());
-                                JOptionPane.showMessageDialog(F2ShareMenu.this, resourceBundle.getString("download_successfully"), resourceBundle.getString("download"), JOptionPane.DEFAULT_OPTION);
+                                        ctrl.downloadDataFile(fileName, Configuration.getDownloadFolderName());
+                                        return null;
+                                    }
 
-                                worker.cancel(true);
-                                dialog.dispose();
+                                };
+                                mySwingWorker.addPropertyChangeListener(new PropertyChangeListener() {
+                                    @Override
+                                    public void propertyChange(PropertyChangeEvent evt) {
+                                        if (evt.getPropertyName().equals("state")) {
+                                            if (evt.getNewValue() == SwingWorker.StateValue.DONE) {
+                                                dialog.dispose();
+                                                JOptionPane.showMessageDialog(F2ShareMenu.this, resourceBundle.getString("download_successfully"), resourceBundle.getString("download"), JOptionPane.DEFAULT_OPTION);
+                                            }
+                                        }
+                                    }
+                                });
+                                mySwingWorker.execute();
+                                dialog.setVisible(true);
+                                try {
+                                    mySwingWorker.get();
+                                } catch (Exception e1) {
+                                    e1.printStackTrace();
+                                }
                             }
                         }
                     } else if (fileName != null) {
-                        SwingWorker worker = createDownloadGif();
-                        worker.execute();
+                        final JDialog dialog = new JDialog(F2ShareMenu.this);
+                        Execute(dialog);
+                        SwingWorker<Void, Void> mySwingWorker = new SwingWorker<Void, Void>() {
+                            @Override
+                            protected Void doInBackground() throws Exception {
 
-                        ctrl.downloadDataFile(fileName, Configuration.getDownloadFolderName());
-                        JOptionPane.showMessageDialog(F2ShareMenu.this, resourceBundle.getString("download_successfully"), resourceBundle.getString("download"), JOptionPane.DEFAULT_OPTION);
+                                ctrl.downloadDataFile(fileName, Configuration.getDownloadFolderName());
+                                return null;
+                            }
 
-                        worker.cancel(true);
-                        dialog.dispose();
+                        };
+                        mySwingWorker.addPropertyChangeListener(new PropertyChangeListener() {
+                            @Override
+                            public void propertyChange(PropertyChangeEvent evt) {
+                                if (evt.getPropertyName().equals("state")) {
+                                    if (evt.getNewValue() == SwingWorker.StateValue.DONE) {
+                                        dialog.dispose();
+                                        JOptionPane.showMessageDialog(F2ShareMenu.this, resourceBundle.getString("download_successfully"), resourceBundle.getString("download"), JOptionPane.DEFAULT_OPTION);
+                                    }
+                                }
+                            }
+                        });
+                        mySwingWorker.execute();
+                        dialog.setVisible(true);
+                        try {
+                            mySwingWorker.get();
+                        } catch (Exception e1) {
+                            e1.printStackTrace();
+                        }
                     }
-                } catch (IOException ex) {
+
+                } catch (Exception ex) {
                     Logger.getLogger(F2ShareMenu.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -365,36 +410,32 @@ public class F2ShareMenu extends JFrame implements Observer {
         DataFileListModel dataFileListModel = new DataFileListModel(dataFiles);
         listShared.setModel(dataFileListModel);
         RemoteFileListModel remoteFileListModel = new RemoteFileListModel(remoteFiles);
+        RemoteFile remoteFile = null;
+        if (listDownload.getSelectedValue() != null) {
+
+            remoteFile = ((RemoteFile) listDownload.getSelectedValue());
+        }
         listDownload.setModel(remoteFileListModel);
+        for (int i = 0; i < listDownload.getModel().getSize(); i++) {
+            if (((RemoteFile) listDownload.getModel().getElementAt(i)).equals(remoteFile)) {
+                listDownload.setSelectedIndex(i);
+            }
+        }
+
     }
 
-    public SwingWorker createDownloadGif() {
-        SwingWorker<Void, Void> mySwingWorker;
-        mySwingWorker = new SwingWorker<Void, Void>() {
+    public void Execute(JDialog dialog) {
 
-            @Override
-            protected Void doInBackground() throws Exception {
-                dialog = new JDialog(F2ShareMenu.this);
-                ImageIcon gif = new ImageIcon("src/main/resources/loading.gif");
-                JLabel labelGif = new JLabel(resourceBundle.getString("downloading"));
-                labelGif.setIcon(gif);
-                dialog.setUndecorated(true);
-                dialog.add(labelGif);
-                dialog.pack();
-                dialog.setLocationRelativeTo(F2ShareMenu.this);
-                dialog.setVisible(true);
+        ImageIcon gif = new ImageIcon("src/main/resources/loading.gif");
+        JLabel labelGif = new JLabel(resourceBundle.getString("downloading"));
+        labelGif.setIcon(gif);
+        dialog.setUndecorated(true);
+        dialog.add(labelGif);
+        dialog.pack();
+        dialog.setLocationRelativeTo(F2ShareMenu.this);
+        dialog.setAlwaysOnTop(true);
+        dialog.setModal(true);
 
-                return null;
-            }
-
-            @Override
-            protected void done() {
-
-            }
-
-        };
-
-        return mySwingWorker;
     }
 
     public boolean findFile(String fileName) {
