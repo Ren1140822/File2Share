@@ -27,6 +27,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 /**
  * Represents the main menu of the application.
@@ -50,6 +52,7 @@ public class F2ShareMenu extends JFrame implements Observer {
     private JPanel panelDownload;
     private JList listShared;
     private JList listDownload;
+    private JButton buttonDownload;
 
     private Set<RemoteFile> remoteFiles;
     private Set<DataFile> dataFiles;
@@ -131,12 +134,26 @@ public class F2ShareMenu extends JFrame implements Observer {
         RemoteFileListModel remoteFileListModel = new RemoteFileListModel(remoteFiles);
         listDownload = new JList(remoteFileListModel);
         listDownload.setCellRenderer(new RemoteFileListCellRenderer());
+        listDownload.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         panelDownload.add(createPanelList(listDownload), BorderLayout.CENTER);
-        JButton button = new JButton(resourceBundle.getString("download"));
-        button.addMouseListener(new MouseListener() {
+        buttonDownload = new JButton(resourceBundle.getString("download"));
+        buttonDownload.setEnabled(false);
+        
+        listDownload.addListSelectionListener(new ListSelectionListener() {
             @Override
-            public void mouseClicked(MouseEvent me) {
+            public void valueChanged(ListSelectionEvent e) {
+                if (listDownload.isSelectionEmpty()) {
+                    buttonDownload.setEnabled(false);
+                } else {
+                    buttonDownload.setEnabled(true);
+                }
+            }
+        });
+
+        buttonDownload.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
                 CommunicationController ctrl = new CommunicationController(((RemoteFile) listDownload.getSelectedValue()).getAddress(), server, ((RemoteFile) listDownload.getSelectedValue()).getTcpPort());
                 ctrl.sendFileRequest(((RemoteFile) listDownload.getSelectedValue()).getName());
                 try {
@@ -169,31 +186,8 @@ public class F2ShareMenu extends JFrame implements Observer {
                     Logger.getLogger(F2ShareMenu.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-
-            @Override
-
-            public void mousePressed(MouseEvent me) {
-
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent me) {
-
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent me) {
-
-            }
-
-            @Override
-            public void mouseExited(MouseEvent me) {
-
-            }
-
-        }
-        );
-        panelDownload.add(button, BorderLayout.SOUTH);
+        });
+        panelDownload.add(buttonDownload, BorderLayout.SOUTH);
         return panelDownload;
     }
 
