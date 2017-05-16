@@ -45,17 +45,21 @@ public class F2ShareMenu extends JFrame implements Observer {
     private final ResourceBundle resourceBundle;
 
     private static final int WIDTH = 500, LENGTH = 500;
-    private static final String DOWNLOAD = ResourceBundle.getBundle("language.MessagesBundle").getString("remote_files");
-    private static final String SHARE = ResourceBundle.getBundle("language.MessagesBundle").getString("local_files");
+    private static final String REMOTE_FILES = ResourceBundle.getBundle("language.MessagesBundle").getString("remote_files");
+    private static final String LOCAL_FILES = ResourceBundle.getBundle("language.MessagesBundle").getString("local_files");
+    private static final String DOWNLOADED_FILES = ResourceBundle.getBundle("language.MessagesBundle").getString("downloaded_files");
     private StartConfiguration configuration;
     private JPanel panelShared;
     private JPanel panelDownload;
+    private JPanel downloadedPanel;
     private JList listShared;
     private JList listDownload;
+    private JList downloadedList;
     private JButton buttonDownload;
 
     private Set<RemoteFile> remoteFiles;
     private Set<DataFile> dataFiles;
+    private Set<DataFile> downloadedFiles;
     private TcpServer server;
     private JDialog dialog;
 
@@ -70,10 +74,11 @@ public class F2ShareMenu extends JFrame implements Observer {
             e.printStackTrace();
         }
 
-        // TODO fill remoteFiles and dataFiles
+        // default instantiation
         remoteFiles = new TreeSet<>();
+        dataFiles = new TreeSet<>();
+        downloadedFiles = new TreeSet<>();
 
-        // TODO DataFileRepository.getSharedFiles() => ERROR  nullpointer
         try {
             dataFiles = new TreeSet(DataFileRepository.getSharedFiles());
         } catch (IOException e) {
@@ -122,8 +127,9 @@ public class F2ShareMenu extends JFrame implements Observer {
     private JTabbedPane createTabPanels() {
         JTabbedPane tabbedPane = new JTabbedPane();
 
-        tabbedPane.add(DOWNLOAD, createDownloadPanel());
-        tabbedPane.add(SHARE, createSharedPanel());
+        tabbedPane.add(REMOTE_FILES, createDownloadPanel());
+        tabbedPane.add(LOCAL_FILES, createSharedPanel());
+        tabbedPane.add(DOWNLOADED_FILES, createDownloadedPanel());
 
         return tabbedPane;
     }
@@ -182,6 +188,7 @@ public class F2ShareMenu extends JFrame implements Observer {
                         worker.cancel(true);
                         dialog.dispose();
                     }
+                    refreshDownloadedFiles();
                 } catch (IOException ex) {
                     Logger.getLogger(F2ShareMenu.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -201,6 +208,18 @@ public class F2ShareMenu extends JFrame implements Observer {
         panelShared.add(createPanelList(listShared), BorderLayout.CENTER);
 
         return panelShared;
+    }
+
+    private JPanel createDownloadedPanel() {
+        downloadedPanel = new JPanel(new BorderLayout());
+
+        downloadedList = new JList();
+        downloadedList.setCellRenderer(new DataFileListCellRenderer());
+        refreshDownloadedFiles();
+
+        downloadedPanel.add(createPanelList(downloadedList), BorderLayout.CENTER);
+
+        return downloadedPanel;
     }
 
     private JScrollPane createPanelList(JList jlist) {
@@ -407,5 +426,16 @@ public class F2ShareMenu extends JFrame implements Observer {
             }
         }
         return false;
+    }
+
+    public void refreshDownloadedFiles() {
+        try {
+            downloadedFiles = new TreeSet(DataFileRepository.getDownloadedFiles());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        DataFileListModel dataFileListModel = new DataFileListModel(downloadedFiles);
+        downloadedList.setModel(dataFileListModel);
     }
 }
