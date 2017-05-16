@@ -194,7 +194,7 @@ public class F2ShareMenu extends JFrame implements Observer {
                                 });
                                 mySwingWorker.execute();
                                 dialog.setVisible(true);
-                                    refreshDownloadedFiles();
+                                refreshDownloadedFiles();
                                 try {
                                     mySwingWorker.get();
                                 } catch (Exception e1) {
@@ -210,6 +210,7 @@ public class F2ShareMenu extends JFrame implements Observer {
                             protected Void doInBackground() throws Exception {
 
                                 ctrl.downloadDataFile(fileName, Configuration.getDownloadFolderName());
+
                                 return null;
                             }
 
@@ -263,7 +264,34 @@ public class F2ShareMenu extends JFrame implements Observer {
         refreshDownloadedFiles();
 
         downloadedPanel.add(createPanelList(downloadedList), BorderLayout.CENTER);
+        JButton button = new JButton("Open file");
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
 
+                if (downloadedList.getSelectedValue() != null) {
+                    String fileName = ((DataFile) downloadedList.getSelectedValue()).name();
+                    try {
+                        File file = new File(Configuration.getDownloadFolderName() + "/" + fileName);
+                        Desktop.getDesktop().open(file);
+                    } catch (IOException ex) {
+                        Logger.getLogger(F2ShareMenu.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+
+        });
+        downloadedList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (downloadedList.isSelectionEmpty()) {
+                    button.setEnabled(false);
+                } else {
+                    button.setEnabled(true);
+                }
+            }
+        });
+        downloadedPanel.add(button, BorderLayout.SOUTH);
         return downloadedPanel;
     }
 
