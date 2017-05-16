@@ -26,10 +26,15 @@ public class AnnounceService {
 
         List<DataFile> filesToAnnounce = DataFileRepository.getSharedFiles();
 
-        // bytes 0 to 3 reserved for udp port and byte 4 reserved to announced files count
-        byte startingPosition = 5;
+        // byte 0 indicates the version
+        // bytes 1 to 4 reserved for udp port
+        // byte 5 reserved to announced files count
+        byte startingPosition = 6, countFilesPosition = 5;
 
         byte data[] = new byte[UdpConnection.MAXIMUM_BYTES_PAYLOAD];
+
+        // using 1st version of protocol
+        data[0] = 1;
 
         byte dataCurrentSize = startingPosition;
         byte countFiles = 0;
@@ -41,7 +46,7 @@ public class AnnounceService {
         // FIXME get dynamic tcp port
         int tcpPort = finalTcpPort;
         byte tcpPortByte[] = ByteBuffer.allocate(4).putInt(tcpPort).array();
-        Bytes.insertArrayIntoArray(data, 0, tcpPortByte);
+        Bytes.insertArrayIntoArray(data, 1, tcpPortByte);
 
         for (DataFile file : filesToAnnounce) {
             // if fits add, otherwise send and create new
@@ -49,8 +54,10 @@ public class AnnounceService {
             fileNameSize = file.nameSize();
 
             if (dataCurrentSize + fileNameSize + 1 > UdpConnection.MAXIMUM_BYTES_PAYLOAD) {
-                data[4] = countFiles;
+                data[countFilesPosition] = countFiles;
                 UdpConnection.sendBroadcast(data, udpPort);
+
+                System.out.println("Data exceeds the recommended UDP size, compressing the message.");
 
                 pos_index = startingPosition;
 
@@ -72,7 +79,7 @@ public class AnnounceService {
             }
         }
 
-        data[4] = countFiles;
+        data[countFilesPosition] = countFiles;
         UdpConnection.sendBroadcast(data, udpPort);
 
         return filesToAnnounce;

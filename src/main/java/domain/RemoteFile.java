@@ -49,6 +49,7 @@ public class RemoteFile extends Observable implements Comparable<RemoteFile> {
         return tcpPort;
     }
 
+    int secondsToRefreshFile = Configuration.getRefreshFileTime();
     public void activateTimer() {
         this.timer = new Timer();
         this.timerTask = new TimerTask() {
@@ -58,7 +59,7 @@ public class RemoteFile extends Observable implements Comparable<RemoteFile> {
                 notifyObservers();
             }
         };
-        this.timer.schedule(timerTask, 45 * 1000);
+        this.timer.schedule(timerTask, secondsToRefreshFile * 1000);
     }
 
     public void cancelTimer() {

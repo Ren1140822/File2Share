@@ -61,6 +61,13 @@ public class UdpReceiverThread extends Thread {
                     if (!isLocalAddress(address)) {
 
                         ByteBuffer wrapped = ByteBuffer.wrap(data);
+
+                        byte protocolVersion = wrapped.get();
+                        if (protocolVersion != 1) {
+                            System.out.println("Protocol only supports version 1.");
+                            return;
+                        }
+
                         int tcpPort = wrapped.getInt();
                         byte announcements = wrapped.get();
 
