@@ -27,6 +27,7 @@ import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import domain.KnownHosts;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import util.Strings;
@@ -148,7 +149,11 @@ public class KnowHostsUI extends JDialog{
             public void actionPerformed(ActionEvent e) {
                 new DialogNewHost(KnowHostsUI.this, HOSTS, knowsHosts);
                 lstHosts.setListData(knowsHosts.toArray());
-                save();
+                try {
+                    save();
+                } catch (IOException ex) {
+                    Logger.getLogger(KnowHostsUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 if (knowsHosts.isEmpty()) {
                     rmHost.setEnabled(false);
                 } else {
@@ -195,7 +200,11 @@ public class KnowHostsUI extends JDialog{
                     if (answer == YES) {
                         knowsHosts.remove(newString);
                         lstHosts.setListData(knowsHosts.toArray());
-                        save();
+                        try {
+                            save();
+                        } catch (IOException ex) {
+                            Logger.getLogger(KnowHostsUI.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                         if (knowsHosts.isEmpty()) {
                             rmHost.setEnabled(false);
                         }
@@ -207,7 +216,7 @@ public class KnowHostsUI extends JDialog{
         return rmHost;
     }
     
-    private void save(){
+    private void save() throws IOException{
         try {
             KnownHosts.saveKnownHostsFile(knowsHosts);
         } catch (FileNotFoundException ex) {
