@@ -49,7 +49,20 @@ public class Configuration {
         Configuration.ignoreFilesStartingWith = DEFAULT_IGNORE_FILES_STARTING_WITH;
         Configuration.ignoreFilesWithExtension = DEFAULT_IGNORE_FILES_WITH_EXTENSION;
     }
-
+    /**
+     *  Constructor to be builded by user
+     * 
+     * @param UDPPortNumber
+     * @param UDPTimeAnnouncement
+     * @param refreshFileTime
+     * @param sharedFolderName
+     * @param downloadFolderName
+     * @param ignoreFolders
+     * @param ignoreFilesWithoutExtension
+     * @param ignoreFiles
+     * @param ignoreFilesStartingWith
+     * @param ignoreFilesWithExtension 
+     */
     public Configuration(Integer UDPPortNumber, Integer UDPTimeAnnouncement,
                          Integer refreshFileTime, String sharedFolderName, String downloadFolderName,
                          boolean ignoreFolders, boolean ignoreFilesWithoutExtension, String[] ignoreFiles,
@@ -86,7 +99,6 @@ public class Configuration {
     /**
      * validate all strings used
      *
-     * @param extension
      * @param sharedFolderName
      * @param downloadFolderName
      * @return true if all strings are valid, false if not

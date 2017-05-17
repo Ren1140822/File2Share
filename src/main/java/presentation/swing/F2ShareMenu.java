@@ -18,7 +18,6 @@ import presentation.swing.components.DataFileListCellRenderer;
 import presentation.swing.components.DataFileListModel;
 import presentation.swing.components.RemoteFileListCellRenderer;
 import presentation.swing.components.RemoteFileListModel;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -26,8 +25,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
@@ -35,7 +32,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.text.DefaultEditorKit;
 
 /**
  * Represents the main menu of the application.
@@ -126,6 +122,7 @@ public class F2ShareMenu extends JFrame implements Observer {
 
         createMenuBar();
 
+        add(createPanelImage(), BorderLayout.NORTH);
         add(createTabPanels(), BorderLayout.CENTER);
 
     }
@@ -564,10 +561,23 @@ public class F2ShareMenu extends JFrame implements Observer {
         }
 
     }
+    
+        
+    private JPanel createPanelImage() {
+        ImageIcon background = new ImageIcon("src/main/resources/img/network.png");
+
+        JLabel label = new JLabel();
+        label.setIcon(background);
+
+        JPanel panel = new JPanel();
+        panel.add(label, BorderLayout.CENTER);
+
+        return panel;
+    }
 
     public void Execute(JDialog dialog) {
 
-        ImageIcon gif = new ImageIcon("src/main/resources/loading.gif");
+        ImageIcon gif = new ImageIcon("src/main/resources/img/loading.gif");
         JLabel labelGif = new JLabel(resourceBundle.getString("downloading"));
         labelGif.setIcon(gif);
         dialog.setUndecorated(true);

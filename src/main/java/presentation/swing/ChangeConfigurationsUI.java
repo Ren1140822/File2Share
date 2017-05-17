@@ -433,7 +433,7 @@ public class ChangeConfigurationsUI extends JDialog {
     }
 
     private JPanel createPanelWest() {
-        ImageIcon background = new ImageIcon("src/main/resources/config.png");
+        ImageIcon background = new ImageIcon("src/main/resources/img/config.png");
 
         JLabel label = new JLabel();
         label.setIcon(background);
