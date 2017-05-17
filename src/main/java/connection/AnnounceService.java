@@ -5,12 +5,14 @@ package connection;
 
 import domain.Configuration;
 import domain.DataFile;
+import domain.KnownHosts;
 import persistence.DataFileRepository;
 import util.Bytes;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Represents a service to make announcements in the network.
@@ -57,6 +59,11 @@ public class AnnounceService {
                 data[countFilesPosition] = countFiles;
                 UdpConnection.sendBroadcast(data, udpPort);
 
+                Set<String> knownHosts = KnownHosts.getKnownHosts();
+                for (String host : knownHosts) {
+                    UdpConnection.sendUnicast(data, udpPort, host);
+                }
+
                 System.out.println("Data exceeds the recommended UDP size, compressing the message.");
 
                 pos_index = startingPosition;
@@ -81,6 +88,11 @@ public class AnnounceService {
 
         data[countFilesPosition] = countFiles;
         UdpConnection.sendBroadcast(data, udpPort);
+
+        Set<String> knownHosts = KnownHosts.getKnownHosts();
+        for (String host : knownHosts) {
+            UdpConnection.sendUnicast(data, udpPort, host);
+        }
 
         return filesToAnnounce;
     }
