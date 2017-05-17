@@ -5,8 +5,11 @@
  */
 package domain;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Formatter;
 import java.util.Scanner;
 import java.util.Set;
@@ -40,25 +43,17 @@ public final class KnownHosts {
 
     }
     
-    private boolean validateHost(String host){
-        return !Strings.isNullOrEmptyOrWhiteSpace(host);
-    }
-    
     private static void createKnownHostsFile() throws FileNotFoundException {
 
-        File createFile = new File(DEFAULT_FILENAME);
-        try (Formatter fileFormatter = new Formatter(createFile)) {
-
-            fileFormatter.format("");
-        }
+        final File createFile = new File(DEFAULT_FILENAME);
 
     }
     
-    public static boolean saveKnownHostsFile(Set<String> list) throws FileNotFoundException{
-        File createFile = new File(DEFAULT_FILENAME);
-        try (Formatter fileFormatter = new Formatter(createFile)) {
-            for (String l : list){
-                fileFormatter.format("%s\n", l);
+    public static boolean saveKnownHostsFile(Set<String> list) throws FileNotFoundException, IOException{
+
+        try (FileWriter fw = new FileWriter(DEFAULT_FILENAME)) {
+            for (String l : list) {
+                fw.write(l + "\n");
             }
         }
         return true;
