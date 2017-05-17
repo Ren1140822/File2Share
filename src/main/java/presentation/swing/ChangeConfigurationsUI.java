@@ -61,7 +61,7 @@ public class ChangeConfigurationsUI extends JDialog {
 
     private JFileChooser fileChooser;
     
-    private static final int WIDTH = 500, LENGTH = 500;
+    private static final int WIDTHW = 500, LENGTH = 500;
 
     /**
      * The resource bundle.
@@ -100,7 +100,7 @@ public class ChangeConfigurationsUI extends JDialog {
         });
         pack();
         setResizable(true);
-        setMinimumSize(new Dimension(WIDTH, LENGTH));
+        setMinimumSize(new Dimension(WIDTHW, LENGTH));
         setLocationRelativeTo(null);
         setVisible(true);
 

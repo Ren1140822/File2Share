@@ -265,11 +265,13 @@ public class F2ShareMenu extends JFrame implements Observer {
 
         downloadedPanel.add(createPanelList(downloadedList), BorderLayout.CENTER);
         JButton button = new JButton("Open file");
+        button.setEnabled(false);
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
 
                 if (downloadedList.getSelectedValue() != null) {
+                    button.setEnabled(true);
                     String fileName = ((DataFile) downloadedList.getSelectedValue()).name();
                     try {
                         File file = new File(Configuration.getDownloadFolderName() + "/" + fileName);
@@ -321,6 +323,7 @@ public class F2ShareMenu extends JFrame implements Observer {
         menu.setMnemonic(KeyEvent.VK_F);
 
         menu.add(createItemConfigurations());
+        menu.add(createItemHosts());
         menu.addSeparator();
         menu.add(createItemExit());
 
@@ -394,6 +397,24 @@ public class F2ShareMenu extends JFrame implements Observer {
         });
         return item;
     }
+    
+    private JMenuItem createItemHosts() {
+        JMenuItem item = new JMenuItem(resourceBundle.getString("hosts"), KeyEvent.VK_H);
+        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.ALT_MASK));
+        item.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    hosts();
+
+                } catch (IOException ex) {
+                    Logger.getLogger(F2ShareMenu.class
+                            .getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+        return item;
+    }
 
     /**
      * cria MenuItem Sair
@@ -429,6 +450,10 @@ public class F2ShareMenu extends JFrame implements Observer {
 
     private void configurations() throws IOException {
         final ChangeConfigurationsUI c = new ChangeConfigurationsUI(F2ShareMenu.this);
+    }
+    
+    private void hosts() throws IOException {
+        final KnowHostsUI k = new KnowHostsUI(F2ShareMenu.this);
     }
 
     private void exitAPP() {

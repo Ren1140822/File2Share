@@ -7,10 +7,10 @@ package domain;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.Formatter;
-import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
+import java.util.TreeSet;
 import util.Strings;
 
 /**
@@ -21,8 +21,8 @@ public final class KnownHosts {
     
     public static final String DEFAULT_FILENAME = "known_hosts.txt";
     
-    public static List<String> getKnownHosts(File file) throws FileNotFoundException{
-        List<String> list = new ArrayList<>();
+    public static Set<String> getKnownHosts() throws FileNotFoundException{
+        Set<String> list = new TreeSet<>();
         try {
             try (Scanner fInput = new Scanner(new File(DEFAULT_FILENAME))) {
                 while (fInput.hasNextLine()) {
@@ -40,25 +40,28 @@ public final class KnownHosts {
 
     }
     
-    public static List<String> getKnownHosts(){
-        List<String> list = new ArrayList<>();
+    public Set<String> addKnownHosts(String host) throws FileNotFoundException{
+        if (!validateHost(host)){
+            return KnownHosts.getKnownHosts();
+        }
+        Set<String> list = KnownHosts.getKnownHosts();
+        list.add(host);
+        saveKnownHostsFile(list);
         return list;
     }
     
-    public List<String> addKnownHosts(String host){
+    public Set<String> removeKnownHosts(String host) throws FileNotFoundException{
         if (!validateHost(host)){
             return KnownHosts.getKnownHosts();
         }
-        KnownHosts.getKnownHosts().add(host);
-        return KnownHosts.getKnownHosts();
-    }
-    
-    public List<String> removeKnownHosts(String host){
-        if (!validateHost(host)){
-            return KnownHosts.getKnownHosts();
+        
+        Set<String> list = KnownHosts.getKnownHosts();
+        
+        if(!list.isEmpty() || list.contains(host)){   
+            list.remove(host);
+            saveKnownHostsFile(list);
         }
-        KnownHosts.getKnownHosts().remove(host);
-        return KnownHosts.getKnownHosts();
+        return list;
     }
     
     private boolean validateHost(String host){
@@ -73,5 +76,14 @@ public final class KnownHosts {
             fileFormatter.format("");
         }
 
+    }
+    
+    public static boolean saveKnownHostsFile(Set<String> list) throws FileNotFoundException{
+        File createFile = new File(DEFAULT_FILENAME);
+        try (Formatter fileFormatter = new Formatter(createFile)) {
+
+            fileFormatter.format("%s", list.toString());
+        }
+        return true;
     }
 }
