@@ -27,11 +27,15 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.nio.file.CopyOption;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.text.DefaultEditorKit;
 
 /**
  * Represents the main menu of the application.
@@ -252,7 +256,72 @@ public class F2ShareMenu extends JFrame implements Observer {
         listShared.setCellRenderer(new DataFileListCellRenderer());
 
         panelShared.add(createPanelList(listShared), BorderLayout.CENTER);
+        JButton buttonRemove = new JButton("Remove File");
+        buttonRemove.setEnabled(false);
+        buttonRemove.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
 
+                if (listShared.getSelectedValue() != null) {
+                    buttonRemove.setEnabled(true);
+                    String fileName = ((DataFile) listShared.getSelectedValue()).name();
+                    try {
+                        File file = new File(Configuration.getSharedFolderName() + "/" + fileName);
+                        file.delete();
+                        refreshSharedFiles();
+                        JOptionPane.showConfirmDialog(F2ShareMenu.this, "File removed sucessfully.","File removal",JOptionPane.PLAIN_MESSAGE);
+                    } catch (Exception ex) {
+                        Logger.getLogger(F2ShareMenu.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+
+        });
+        JButton buttonAdd = new JButton("Add file");
+        buttonAdd.setEnabled(true);
+        buttonAdd.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+
+               
+                   
+                  
+                    try {
+                        JFileChooser chooser = new JFileChooser();
+                        if (chooser.showOpenDialog(F2ShareMenu.this) == JFileChooser.APPROVE_OPTION) {
+
+                            File file = chooser.getSelectedFile();
+                            File copiedFile = new File(Configuration.getSharedFolderName()+"/"+file.getName());
+                            Files.copy(file.toPath(), copiedFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                            refreshSharedFiles();
+                             JOptionPane.showConfirmDialog(F2ShareMenu.this, "File added sucessfully.","File add",JOptionPane.PLAIN_MESSAGE);
+                        }
+
+                    } catch (Exception ex) {
+                        Logger.getLogger(F2ShareMenu.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                
+            }
+
+        });
+        listShared.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (listShared.isSelectionEmpty()) {
+                   
+                    buttonRemove.setEnabled(false);
+                } else {
+                    
+                    buttonRemove.setEnabled(true);
+                }
+            }
+        });
+        JPanel panelButtons = new JPanel(new FlowLayout());
+        panelButtons.add(buttonAdd);
+        panelButtons.add(buttonRemove);
+        
+        panelShared.add(panelButtons, BorderLayout.SOUTH);
+     
         return panelShared;
     }
 
@@ -397,7 +466,7 @@ public class F2ShareMenu extends JFrame implements Observer {
         });
         return item;
     }
-    
+
     private JMenuItem createItemHosts() {
         JMenuItem item = new JMenuItem(resourceBundle.getString("hosts"), KeyEvent.VK_H);
         item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.ALT_MASK));
@@ -451,7 +520,7 @@ public class F2ShareMenu extends JFrame implements Observer {
     private void configurations() throws IOException {
         final ChangeConfigurationsUI c = new ChangeConfigurationsUI(F2ShareMenu.this);
     }
-    
+
     private void hosts() throws IOException {
         final KnowHostsUI k = new KnowHostsUI(F2ShareMenu.this);
     }
@@ -531,5 +600,15 @@ public class F2ShareMenu extends JFrame implements Observer {
 
         DataFileListModel dataFileListModel = new DataFileListModel(downloadedFiles);
         downloadedList.setModel(dataFileListModel);
+    }
+       public void refreshSharedFiles() {
+        try {
+            dataFiles = new TreeSet(DataFileRepository.getSharedFiles());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        DataFileListModel dataFileListModel = new DataFileListModel(dataFiles);
+        listShared.setModel(dataFileListModel);
     }
 }
