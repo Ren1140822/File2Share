@@ -41,4 +41,27 @@ public final class UdpConnection {
 
         sock.close();
     }
+
+    /**
+     * Sends the given data to the given unicast address over the given port.
+     *
+     * @param data data to be sent to
+     * @param port port to be sent to
+     * @param host destination host
+     * @throws IOException input/output exception
+     */
+    public static void sendUnicast(byte data[], int port, String host) throws IOException {
+        InetAddress serverAddress = InetAddress.getByName(host);
+        DatagramPacket udpPacket = new DatagramPacket(data, data.length, serverAddress, port);
+
+        udpPacket.setData(data);
+        udpPacket.setLength(data.length);
+
+        DatagramSocket sock = new DatagramSocket();
+        sock.setBroadcast(true);
+
+        sock.send(udpPacket);
+
+        sock.close();
+    }
 }
