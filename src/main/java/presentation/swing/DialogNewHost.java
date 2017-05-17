@@ -20,6 +20,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+import util.Strings;
 
 /**
  *
@@ -112,19 +113,26 @@ public class DialogNewHost extends JDialog{
             @Override
             public void actionPerformed(ActionEvent e) {
                 String s = txt.getText();
-                
-                boolean check = lst.add(s);
-                if (check) {   
-                        JOptionPane.showMessageDialog(DialogNewHost.this,
-                                resourceBundle.getString("insert_completed"),
-                        title,
-                        JOptionPane.INFORMATION_MESSAGE);
-                    } else {
-                        JOptionPane.showMessageDialog(DialogNewHost.this,
-                                resourceBundle.getString("item_already_exists"),
-                                title,
-                                JOptionPane.ERROR_MESSAGE);
-                    }
+                if(!Strings.isNullOrEmptyOrWhiteSpace(s)){                
+                    boolean check = lst.add(s);
+                    if (check) {   
+                            JOptionPane.showMessageDialog(DialogNewHost.this,
+                                    resourceBundle.getString("insert_completed"),
+                            title,
+                            JOptionPane.INFORMATION_MESSAGE);
+                        } else {
+                            JOptionPane.showMessageDialog(DialogNewHost.this,
+                                    resourceBundle.getString("item_already_exists"),
+                                    title,
+                                    JOptionPane.ERROR_MESSAGE);
+                        }
+                } else {
+                    JOptionPane.showMessageDialog(
+                                    DialogNewHost.this,
+                                    resourceBundle.getString("invalid_data"),
+                                    title,
+                                    JOptionPane.ERROR_MESSAGE);
+                }
                     
                 dispose();
             }

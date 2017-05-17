@@ -40,30 +40,6 @@ public final class KnownHosts {
 
     }
     
-    public Set<String> addKnownHosts(String host) throws FileNotFoundException{
-        if (!validateHost(host)){
-            return KnownHosts.getKnownHosts();
-        }
-        Set<String> list = KnownHosts.getKnownHosts();
-        list.add(host);
-        saveKnownHostsFile(list);
-        return list;
-    }
-    
-    public Set<String> removeKnownHosts(String host) throws FileNotFoundException{
-        if (!validateHost(host)){
-            return KnownHosts.getKnownHosts();
-        }
-        
-        Set<String> list = KnownHosts.getKnownHosts();
-        
-        if(!list.isEmpty() || list.contains(host)){   
-            list.remove(host);
-            saveKnownHostsFile(list);
-        }
-        return list;
-    }
-    
     private boolean validateHost(String host){
         return !Strings.isNullOrEmptyOrWhiteSpace(host);
     }
@@ -81,8 +57,9 @@ public final class KnownHosts {
     public static boolean saveKnownHostsFile(Set<String> list) throws FileNotFoundException{
         File createFile = new File(DEFAULT_FILENAME);
         try (Formatter fileFormatter = new Formatter(createFile)) {
-
-            fileFormatter.format("%s", list.toString());
+            for (String l : list){
+                fileFormatter.format("%s\n", l);
+            }
         }
         return true;
     }
