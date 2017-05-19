@@ -18,7 +18,10 @@ import presentation.swing.components.DataFileListCellRenderer;
 import presentation.swing.components.DataFileListModel;
 import presentation.swing.components.RemoteFileListCellRenderer;
 import presentation.swing.components.RemoteFileListModel;
+
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
@@ -30,8 +33,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 /**
  * Represents the main menu of the application.
@@ -42,15 +43,14 @@ import javax.swing.event.ListSelectionListener;
  */
 public class F2ShareMenu extends JFrame implements Observer {
 
-    /**
-     * The resource bundle.
-     */
-    private final ResourceBundle resourceBundle;
-
     private static final int WIDTH = 500, LENGTH = 500;
     private static final String REMOTE_FILES = ResourceBundle.getBundle("language.MessagesBundle").getString("remote_files");
     private static final String LOCAL_FILES = ResourceBundle.getBundle("language.MessagesBundle").getString("local_files");
     private static final String DOWNLOADED_FILES = ResourceBundle.getBundle("language.MessagesBundle").getString("downloaded_files");
+    /**
+     * The resource bundle.
+     */
+    private final ResourceBundle resourceBundle;
     private StartConfiguration configuration;
     private JPanel panelShared;
     private JPanel panelDownload;
@@ -266,7 +266,7 @@ public class F2ShareMenu extends JFrame implements Observer {
                         File file = new File(Configuration.getSharedFolderName() + "/" + fileName);
                         file.delete();
                         refreshSharedFiles();
-                        JOptionPane.showConfirmDialog(F2ShareMenu.this, "File removed sucessfully.","File removal",JOptionPane.PLAIN_MESSAGE);
+                        JOptionPane.showConfirmDialog(F2ShareMenu.this, "File removed sucessfully.", "File removal", JOptionPane.PLAIN_MESSAGE);
                     } catch (Exception ex) {
                         Logger.getLogger(F2ShareMenu.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -280,24 +280,22 @@ public class F2ShareMenu extends JFrame implements Observer {
             @Override
             public void actionPerformed(ActionEvent ae) {
 
-               
-                   
-                  
-                    try {
-                        JFileChooser chooser = new JFileChooser();
-                        if (chooser.showOpenDialog(F2ShareMenu.this) == JFileChooser.APPROVE_OPTION) {
 
-                            File file = chooser.getSelectedFile();
-                            File copiedFile = new File(Configuration.getSharedFolderName()+"/"+file.getName());
-                            Files.copy(file.toPath(), copiedFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                            refreshSharedFiles();
-                             JOptionPane.showConfirmDialog(F2ShareMenu.this, "File added sucessfully.","File add",JOptionPane.PLAIN_MESSAGE);
-                        }
+                try {
+                    JFileChooser chooser = new JFileChooser();
+                    if (chooser.showOpenDialog(F2ShareMenu.this) == JFileChooser.APPROVE_OPTION) {
 
-                    } catch (Exception ex) {
-                        Logger.getLogger(F2ShareMenu.class.getName()).log(Level.SEVERE, null, ex);
+                        File file = chooser.getSelectedFile();
+                        File copiedFile = new File(Configuration.getSharedFolderName() + "/" + file.getName());
+                        Files.copy(file.toPath(), copiedFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                        refreshSharedFiles();
+                        JOptionPane.showConfirmDialog(F2ShareMenu.this, "File added sucessfully.", "File add", JOptionPane.PLAIN_MESSAGE);
                     }
-                
+
+                } catch (Exception ex) {
+                    Logger.getLogger(F2ShareMenu.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
             }
 
         });
@@ -305,10 +303,10 @@ public class F2ShareMenu extends JFrame implements Observer {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 if (listShared.isSelectionEmpty()) {
-                   
+
                     buttonRemove.setEnabled(false);
                 } else {
-                    
+
                     buttonRemove.setEnabled(true);
                 }
             }
@@ -316,9 +314,9 @@ public class F2ShareMenu extends JFrame implements Observer {
         JPanel panelButtons = new JPanel(new FlowLayout());
         panelButtons.add(buttonAdd);
         panelButtons.add(buttonRemove);
-        
+
         panelShared.add(panelButtons, BorderLayout.SOUTH);
-     
+
         return panelShared;
     }
 
@@ -539,10 +537,12 @@ public class F2ShareMenu extends JFrame implements Observer {
     @Override
     public void update(Observable observable, Object o) {
 
-        if (observable instanceof RemoteFile) {
-            RemoteFile remoteFile = (RemoteFile) observable;
-            remoteFiles.remove(remoteFile);
-            remoteFile.cancelTimer();
+        synchronized (this) {
+            if (observable instanceof RemoteFile) {
+                RemoteFile remoteFile = (RemoteFile) observable;
+                remoteFiles.remove(remoteFile);
+                remoteFile.cancelTimer();
+            }
         }
 
         DataFileListModel dataFileListModel = new DataFileListModel(dataFiles);
@@ -561,8 +561,8 @@ public class F2ShareMenu extends JFrame implements Observer {
         }
 
     }
-    
-        
+
+
     private JPanel createPanelImage() {
         ImageIcon background = new ImageIcon("src/main/resources/img/network.png");
 
@@ -611,7 +611,8 @@ public class F2ShareMenu extends JFrame implements Observer {
         DataFileListModel dataFileListModel = new DataFileListModel(downloadedFiles);
         downloadedList.setModel(dataFileListModel);
     }
-       public void refreshSharedFiles() {
+
+    public void refreshSharedFiles() {
         try {
             dataFiles = new TreeSet(DataFileRepository.getSharedFiles());
         } catch (IOException e) {

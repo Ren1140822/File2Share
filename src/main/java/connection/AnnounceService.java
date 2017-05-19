@@ -40,7 +40,7 @@ public class AnnounceService {
 
         byte dataCurrentSize = startingPosition;
         byte countFiles = 0;
-        byte pos_index = startingPosition;
+        short pos_index = startingPosition;
         byte fileNameSize;
 
         int udpPort = Configuration.getUDPPortNumber();

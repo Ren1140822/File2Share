@@ -75,14 +75,6 @@ public class RemoteFile extends Observable implements Comparable<RemoteFile> {
     }
 
     @Override
-    public int hashCode() {
-        int result = name.hashCode();
-        result = 31 * result + address.hashCode();
-        result = 31 * result + tcpPort.hashCode();
-        return result;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -90,7 +82,13 @@ public class RemoteFile extends Observable implements Comparable<RemoteFile> {
         RemoteFile that = (RemoteFile) o;
 
         if (!name.equals(that.name)) return false;
-        if (!address.equals(that.address)) return false;
-        return tcpPort.equals(that.tcpPort);
+        return address.equals(that.address);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name.hashCode();
+        result = 31 * result + address.hashCode();
+        return result;
     }
 }
