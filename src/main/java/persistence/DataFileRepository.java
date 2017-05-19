@@ -27,12 +27,14 @@ public class DataFileRepository {
         String directory = Configuration.getSharedFolderName();
         File folder = new File(directory);
         File[] listOfFiles = folder.listFiles(new CustomFileFilter());
-
-        for (File file : listOfFiles) {
-            String fileName = file.getName();
-            byte[] data = Files.readAllBytes(file.toPath());
-            dataFiles.add(new DataFile(fileName, data));
-        }
+        
+        if(listOfFiles != null){
+            for (File file : listOfFiles) {
+                String fileName = file.getName();
+                byte[] data = Files.readAllBytes(file.toPath());
+                dataFiles.add(new DataFile(fileName, data));
+            }
+        }        
 
         return dataFiles;
     }
@@ -44,11 +46,13 @@ public class DataFileRepository {
         String directory = Configuration.getDownloadFolderName();
         File folder = new File(directory);
         File[] listOfFiles = folder.listFiles();
-
-        for (File file : listOfFiles) {
-            String fileName = file.getName();
-            byte[] data = Files.readAllBytes(file.toPath());
-            dataFiles.add(new DataFile(fileName, data));
+        
+        if(listOfFiles != null){
+            for (File file : listOfFiles) {
+                String fileName = file.getName();
+                byte[] data = Files.readAllBytes(file.toPath());
+                dataFiles.add(new DataFile(fileName, data));
+            }
         }
 
         return dataFiles;

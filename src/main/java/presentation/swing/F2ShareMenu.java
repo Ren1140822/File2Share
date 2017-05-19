@@ -28,6 +28,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
@@ -75,12 +76,12 @@ public class F2ShareMenu extends JFrame implements Observer {
             JOptionPane.showMessageDialog(this, resourceBundle.getString("error_reading_configuration_file"));
             e.printStackTrace();
         }
-
+        
         // default instantiation
-        remoteFiles = new TreeSet<>();
-        dataFiles = new TreeSet<>();
+        remoteFiles = new TreeSet<>();        
         downloadedFiles = new TreeSet<>();
-
+        dataFiles = new TreeSet<>();
+        
         try {
             dataFiles = new TreeSet(DataFileRepository.getSharedFiles());
         } catch (IOException e) {
@@ -564,7 +565,9 @@ public class F2ShareMenu extends JFrame implements Observer {
 
 
     private JPanel createPanelImage() {
-        ImageIcon background = new ImageIcon("src/main/resources/img/network.png");
+        URL url = getClass().getClassLoader().getResource("img/network.png");
+
+        ImageIcon background = new ImageIcon(url);
 
         JLabel label = new JLabel();
         label.setIcon(background);
@@ -576,8 +579,8 @@ public class F2ShareMenu extends JFrame implements Observer {
     }
 
     public void Execute(JDialog dialog) {
-
-        ImageIcon gif = new ImageIcon("src/main/resources/img/loading.gif");
+        URL url = getClass().getClassLoader().getResource("img/loading.gif");
+        ImageIcon gif = new ImageIcon(url);
         JLabel labelGif = new JLabel(resourceBundle.getString("downloading"));
         labelGif.setIcon(gif);
         dialog.setUndecorated(true);

@@ -14,6 +14,7 @@ import java.awt.event.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -433,7 +434,8 @@ public class ChangeConfigurationsUI extends JDialog {
     }
 
     private JPanel createPanelWest() {
-        ImageIcon background = new ImageIcon("src/main/resources/img/config.png");
+        URL url = getClass().getClassLoader().getResource("img/config.png");
+        ImageIcon background = new ImageIcon(url);
 
         JLabel label = new JLabel();
         label.setIcon(background);
