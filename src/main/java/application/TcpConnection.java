@@ -52,7 +52,6 @@ public class TcpConnection {
     public TcpConnection(InetAddress destinationAddress, TcpServer server, int portNumber) throws UnknownHostException, IOException {
         this.destinationAddress = destinationAddress;
         sock = new Socket(this.destinationAddress, portNumber);
-        //sock2 = server.currentServerSocket();
         dataOut = new DataOutputStream(sock.getOutputStream());
         dataIn = new DataInputStream(sock.getInputStream());
         
@@ -99,8 +98,11 @@ public class TcpConnection {
         byte[] fileData = new byte[fileSize];
         dataIn.readFully(fileData, 0, fileData.length);
         path += "/"+fileName;
+        
         File file = new File(path);
+      
         FileOutputStream fileOut = new FileOutputStream(path,false);
+        
         fileOut.write(fileData);
         fileOut.close();
         return true;

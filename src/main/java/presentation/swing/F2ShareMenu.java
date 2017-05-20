@@ -287,7 +287,9 @@ public class F2ShareMenu extends JFrame implements Observer {
                     if (chooser.showOpenDialog(F2ShareMenu.this) == JFileChooser.APPROVE_OPTION) {
 
                         File file = chooser.getSelectedFile();
+                        
                         File copiedFile = new File(Configuration.getSharedFolderName() + "/" + file.getName());
+                        copiedFile.getParentFile().mkdirs();
                         Files.copy(file.toPath(), copiedFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                         refreshSharedFiles();
                         JOptionPane.showConfirmDialog(F2ShareMenu.this, "File added sucessfully.", "File add", JOptionPane.PLAIN_MESSAGE);
@@ -594,7 +596,9 @@ public class F2ShareMenu extends JFrame implements Observer {
 
     public boolean findFile(String fileName) {
         File folder = new File(Configuration.getDownloadFolderName());
+         folder.mkdirs();
         File[] files = folder.listFiles();
+      
         for (File file : files) {
             boolean isEqual = file.getName().equals(fileName);
             if (isEqual) {
