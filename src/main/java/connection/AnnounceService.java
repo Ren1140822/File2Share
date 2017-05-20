@@ -33,6 +33,8 @@ public class AnnounceService {
         // byte 5 reserved to announced files count
         byte startingPosition = 6, countFilesPosition = 5;
 
+        // creating the data payload to be sent with
+        // the maximum safe size for a datagram
         byte data[] = new byte[UdpConnection.MAXIMUM_BYTES_PAYLOAD];
 
         // using 1st version of protocol
@@ -45,14 +47,11 @@ public class AnnounceService {
 
         int udpPort = Configuration.getUDPPortNumber();
 
-        // FIXME get dynamic tcp port
         int tcpPort = finalTcpPort;
         byte tcpPortByte[] = ByteBuffer.allocate(4).putInt(tcpPort).array();
         Bytes.insertArrayIntoArray(data, 1, tcpPortByte);
 
         for (DataFile file : filesToAnnounce) {
-            // if fits add, otherwise send and create new
-
             fileNameSize = file.nameSize();
 
             if (dataCurrentSize + fileNameSize + 1 > UdpConnection.MAXIMUM_BYTES_PAYLOAD) {

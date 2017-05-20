@@ -1,0 +1,25 @@
+@startuml
+
+package Application {}
+package Connection {}
+package Domain {}
+package Framework {}
+package Persistence {}
+package Presentation {}
+package Swing {}
+package Components{}
+package Util {}
+
+
+Application .> Domain
+Application .> Presentation
+
+Presentation .> Swing
+Swing .> Components
+
+Application .> Connection
+Connection .> Persistence
+Domain .> Framework
+Domain .> Util
+Application .> Util
+@enduml

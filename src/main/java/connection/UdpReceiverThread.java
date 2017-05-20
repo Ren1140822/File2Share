@@ -65,7 +65,7 @@ public class UdpReceiverThread extends Thread {
                         byte protocolVersion = wrapped.get();
                         if (protocolVersion != 1) {
                             System.out.println("Protocol only supports version 1.");
-                            return;
+                            continue;
                         }
 
                         int tcpPort = wrapped.getInt();

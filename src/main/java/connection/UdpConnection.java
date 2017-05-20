@@ -28,8 +28,8 @@ public final class UdpConnection {
      * @throws IOException input/output exception
      */
     public static void sendBroadcast(byte data[], int port) throws IOException {
-        InetAddress serverAddress = InetAddress.getByName("255.255.255.255");
-        DatagramPacket udpPacket = new DatagramPacket(data, data.length, serverAddress, port);
+        InetAddress address = InetAddress.getByName("255.255.255.255");
+        DatagramPacket udpPacket = new DatagramPacket(data, data.length, address, port);
 
         udpPacket.setData(data);
         udpPacket.setLength(data.length);
@@ -51,14 +51,13 @@ public final class UdpConnection {
      * @throws IOException input/output exception
      */
     public static void sendUnicast(byte data[], int port, String host) throws IOException {
-        InetAddress serverAddress = InetAddress.getByName(host);
-        DatagramPacket udpPacket = new DatagramPacket(data, data.length, serverAddress, port);
+        InetAddress address = InetAddress.getByName(host);
+        DatagramPacket udpPacket = new DatagramPacket(data, data.length, address, port);
 
         udpPacket.setData(data);
         udpPacket.setLength(data.length);
 
         DatagramSocket sock = new DatagramSocket();
-        sock.setBroadcast(true);
 
         sock.send(udpPacket);
 
